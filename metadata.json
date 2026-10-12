@@ -1,0 +1,6 @@
+{
+  "name": "GOLDEN PALACE POS",
+  "description": "نظام الكاشير وإدارة المطاعم المتكامل - مطعم القصر الذهبي عند الجيجلي حسين داي",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

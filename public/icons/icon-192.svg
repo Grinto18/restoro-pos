@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192" width="192" height="192">
+  <defs>
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f59e0b" />
+      <stop offset="50%" stop-color="#d97706" />
+      <stop offset="100%" stop-color="#b45309" />
+    </linearGradient>
+    <radialGradient id="bgGrad" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#262626" />
+      <stop offset="100%" stop-color="#0a0a0c" />
+    </radialGradient>
+  </defs>
+  <rect width="192" height="192" rx="36" fill="url(#bgGrad)" stroke="#d97706" stroke-width="4"/>
+  <!-- Crown / Palace symbol -->
+  <path d="M48 132 L144 132 L136 76 L112 100 L96 60 L80 100 L56 76 Z" fill="url(#goldGrad)" stroke="#fef3c7" stroke-width="2"/>
+  <circle cx="96" cy="52" r="7" fill="#fbbf24" />
+  <circle cx="56" cy="68" r="6" fill="#fbbf24" />
+  <circle cx="136" cy="68" r="6" fill="#fbbf24" />
+  <!-- Underline and text -->
+  <rect x="48" y="140" width="96" height="8" rx="4" fill="url(#goldGrad)" />
+  <text x="96" y="166" font-family="sans-serif" font-weight="900" font-size="14" fill="#fbbf24" text-anchor="middle" letter-spacing="1">GOLDEN PALACE</text>
+</svg>

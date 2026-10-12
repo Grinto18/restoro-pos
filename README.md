@@ -1,11 +1,169 @@
-<div align="center">
+# GOLDEN PALACE POS • مطعم القصر الذهبي
 
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
+نظام نقاط البيع (POS) وإدارة المطاعم السحابي المتكامل، مبني من الصفر ليعمل كتطبيق ويب احترافي فائق السرعة متوافق بالكامل مع متصفحات سطح المكتب والشاشات اللمسية على أنظمة Windows.
 
-  <h1>Built with AI Studio</h2>
+---
 
-  <p>The fastest path from prompt to production with Gemini.</p>
+### 🏪 بيانات المطعم والعلامة التجارية
+- **اسم المطعم:** القصر الذهبي (GOLDEN PALACE POS)
+- **العلامة التجارية:** عند الجيجلي • حسين داي
+- **العنوان:** شارع بلهوشات، حسين داي، الجزائر، بجانب فندق Oasis
+- **الهاتف:** 0791755614
+- **العملة الرسمية:** الدينار الجزائري (DA / دج)
 
-  <a href="https://aistudio.google.com/apps">Start building</a>
+---
 
-</div>
+## 1. البنية التحتية (Architecture)
+
+```
+[ متصفح الكاشير / Windows Desktop / Touch Screen ]
+                    │
+                    ▼
+          [ React 19 Frontend + Vite ]
+       (PWA Standalone + IndexedDB Cache & Offline Queue)
+                    │
+                    ▼ (REST API / Bearer Token / Idempotency)
+          [ Node.js + Express Server ]
+                    │
+                    ▼ (Drizzle ORM Connection Pooling)
+         [ PostgreSQL Database (Cloud SQL) ]
+```
+
+---
+
+## 2. التقنيات المستخدمة (Tech Stack)
+
+### Frontend:
+- **React 19** + **TypeScript**
+- **Vite 8** فائق السرعة
+- **Tailwind CSS v4** بتصميم فندقي فاخر (أسود، ذهبي، عنبر) مخصص لشاشات اللمس
+- **Lucide Icons**
+- **IndexedDB** للتخزين المحلي المؤقت وتأمين العمل دون إنترنت
+- **Service Worker** متوافق مع معايير PWA للتثبيت على Windows
+
+### Backend:
+- **Node.js** + **Express**
+- **TypeScript** مع دعم صارم للأنواع
+- **Drizzle ORM** لإدارة المخططات وعمليات الاستعلام الآمنة
+- **PostgreSQL Database** (Cloud SQL) مع دعم المعاملات الذرية (ACID Transactions)
+- **Bcrypt.js** لتشفير كلمات المرور ورموز PIN
+- **JWT & Firebase Admin** للتحقق من هوية الموظفين وتأمين واجهات البرمجة
+
+---
+
+## 3. مخطط قاعدة البيانات (Database Schema)
+
+تحتوي قاعدة البيانات على 24 جدولاً مترابطاً بمفاتيح أجنبية وقيود سلامة كاملة:
+1. `users`: بيانات الموظفين، الأدوار (ADMIN, MANAGER, CASHIER, WAITER, KITCHEN, INVENTORY)، ورموز PIN السريعة.
+2. `categories`: فئات الأطباق مع المحطات الموجهة إليها والترتيب.
+3. `products`: أطباق الطعام مع أسعار البيع وتكلفة الإنتاج وباركود.
+4. `product_variants`: الأحجام (صغير، متوسط، كبير، وجبة مزدوجة).
+5. `product_addons`: الإضافات (جبن، صلصة، فريت...).
+6. `price_history`: سجل تدقيق تغييرات الأسعار (السعر القديم، الجديد، الموظف، السبب، التاريخ).
+7. `restaurant_tables`: الطاولات، المناطق (الصالة، الشرفة، VIP)، والحالة (متاحة، مشغولة، محجوزة، تنظيف).
+8. `orders`: الطلبات والفواتير (رقم البون، النوع: صالة، سفري، توصيل، المبالغ، الخصم، حالة الدفع).
+9. `order_items`: عناصر الطلب مع حفظ `unit_price` غير القابل للتغيير لحماية الفواتير القديمة.
+10. `payments`: عمليات الدفع المجزأة والكاملة مع مفاتيح عدم التكرار (Idempotency).
+11. `cash_shifts`: ورديات الصندوق (رصيد افتتاحي، مبيعات نقدية، مبيعات بطاقة، فارق الصندوق).
+12. `cash_movements`: حركات الإيداع والسحب النقدي من الصندوق.
+13. `suppliers`: دليل الموردين وبيانات الاتصال والأرصدة.
+14. `ingredients`: المواد الأولية بالمخزن مع الوحدات والحدود الدنيا للأمان.
+15. `product_recipes`: وصفات الأطباق لخصم المخزون التلقائي عند البيع.
+16. `inventory_movements`: حركات حركة المخزون (شراء، بيع، تسوية، هدر).
+17. `waste_records`: سجل التالف والهدر (منتهي الصلاحية، محروق، تالف، منسكب).
+18. `purchases` & `purchase_items`: فواتير المشتريات التي ترفع المخزون تلقائياً.
+19. `customers`: سجل الزبائن وإحصائيات طلباتهم.
+20. `deliveries`: طلبات التوصيل المنزلي ومتابعة السائقين.
+21. `expenses`: نفقات المطعم (كهرباء، غاز، إيجار، صيانة).
+22. `audit_logs`: سجل أمان العمليات الحساسة.
+23. `restaurant_settings`: إعدادات المطعم العامة وخيارات الطباعة.
+
+---
+
+## 4. واجهات البرمجة (REST API)
+
+- `POST /api/auth/login` - تسجيل الدخول باسم المستخدم وكلمة المرور
+- `POST /api/auth/pin-login` - تسجيل الدخول السريع برمز PIN للمس الشاشة
+- `GET /api/auth/me` - استرجاع جلسة وصلاحيات المستخدم
+- `GET/POST/PUT /api/users` - إدارة الموظفين والصلاحيات
+- `GET/POST/PUT/DELETE /api/categories` - إدارة الفئات
+- `GET/POST/PUT/DELETE /api/products` - إدارة الأطباق وسجل أسعارها
+- `GET/POST /api/tables` & `POST /api/tables/transfer` - إدارة ونقل الطاولات
+- `GET/POST /api/orders` - إنشاء الطلبات وتطبيق خصم المخزون الذري
+- `POST /api/payments` - معالجة المدفوعات النقدية والمجزأة
+- `GET/POST /api/cash-register/*` - إدارة ورديات الصندوق وتقرير Z
+- `GET /api/kitchen/tickets` & `PATCH /api/kitchen/items/:id/status` - شاشة المطبخ (KDS)
+- `GET/POST/PUT /api/inventory` & `POST /api/inventory/adjust` - المخزون والجرد
+- `GET/POST /api/waste` - سجل الهدر والتالف
+- `GET/POST /api/purchases` & `GET/POST /api/suppliers` - المشتريات والموردين
+- `GET/POST /api/customers` & `GET/PATCH /api/deliveries` - الزبائن والتوصيل
+- `GET/POST /api/expenses` - المصاريف التشغيلية
+- `GET /api/reports/dashboard` & `GET /api/reports/sales` - التقارير والإحصائيات
+- `GET /api/backups/export` - تصدير نسخة احتياطية كاملة
+- `POST /api/sync/batch` - مزامنة الطلبات غير المتصلة بدون تكرار
+
+---
+
+## 5. الحسابات الافتراضية للنظام (Default Credentials)
+
+| المستخدم | الدور | رمز PIN | كلمة المرور |
+| :--- | :--- | :--- | :--- |
+| **admin** | ADMIN (المدير العام) | `1234` | `admin123` |
+| **manager** | MANAGER (مسؤول الصالة) | `2222` | `manager123` |
+| **caissier1** | CASHIER (كاشير الوردية) | `1111` | `cashier123` |
+| **serveur1** | WAITER (نادل الصالة) | `4444` | `waiter123` |
+| **cuisine** | KITCHEN (رئيس المطبخ) | `3333` | `kitchen123` |
+| **stock** | INVENTORY (مسؤول المخزن) | `5555` | `inventory123` |
+
+---
+
+## 6. اختصارات لوحة المفاتيح في نظام Windows
+
+- `F2`: شاشة الكاشير السريعة (Saisie Ventes)
+- `F1`: شاشة المشتريات (Achats)
+- `F3`: إدارة الأطباق والأسعار (Menu)
+- `F5`: شاشة الزبائن (Clients)
+- `F10`: الإحصائيات ولوحة التحكم (Statistiques)
+- `F12`: لوحة الصندوق والوردية (Gestion Caisse)
+- `Escape`: إغلاق النوافذ المنبثقة
+
+---
+
+## 7. طباعة الفواتير (Thermal Receipts)
+النظام مهيأ بتقنية CSS Print للطباعة المباشرة على:
+- طابعات الإيصالات الحرارية **80mm** (القياسية لمطاعم POS).
+- طابعات الإيصالات **58mm**.
+- الطابعات العادية **A4**.
+- تحتوي الفاتورة على شعار القصر الذهبي، العنوان، الهاتف، تفاصيل الأصناف، الخصومات، الباقي المسترجع للزبون، وتذكرة المطبخ المخصصة للشيف.
+
+---
+
+## 8. طريقة العمل بدون إنترنت والمزامنة (Offline & PWA)
+1. في حال انقطاع شبكة الإنترنت، يستمر الكاشير في تلقي الطلبات وحساب المجاميع وتسجيل الدفع النقدي وطباعة الإيصالات.
+2. يتم تخزين الطلبات محلياً داخل `IndexedDB` في طابور محمي (`offline_queue`).
+3. عند عودة الاتصال، يكتشف النظام الشبكة تلقائياً ويزامن الطلبات مع الخادم عبر `POST /api/sync/batch` باستخدام مفاتيح فريدة (`Idempotency Keys`) لمنع تكرار أي طلب أو دفع.
+
+---
+
+## 9. طريقة تشغيل المشروع وتثبيته على Windows
+
+### تشغيل المشروع محلياً:
+```bash
+# تثبيت الحزم
+npm install
+
+# تشغيل خادم التطوير الشامل (Frontend + Backend)
+npm run dev
+```
+
+### طريقة فتح التطبيق من Windows:
+افتح متصفح **Google Chrome** أو **Microsoft Edge** وتوجه إلى:
+```
+http://localhost:3000
+```
+أو عبر الرابط السحابي المباشر.
+
+### طريقة تثبيت التطبيق كـ PWA على Windows:
+1. من شريط العنوان في متصفح Chrome أو Edge، ستظهر أيقونة **تثبيت التطبيق (Install App)** على شكل شاشة صغيرة وسهم.
+2. أو اضغط على القائمة (ثلاث نقاط) ثم اختر: **تطبيقات (Apps) > تثبيت GOLDEN PALACE POS**.
+3. سيتم تثبيت التطبيق كبرنامج مستقل على سطح المكتب وقائمة Start في Windows، يعمل بملء الشاشة وبدون شريط المتصفح كأنه تطبيق Desktop أصلي فائق السرعة!
