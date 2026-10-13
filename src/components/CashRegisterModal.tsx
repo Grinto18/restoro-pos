@@ -103,33 +103,37 @@ export const CashRegisterModal: React.FC<CashRegisterModalProps> = ({ isOpen, on
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-sm flex items-center justify-center p-3 select-none">
-      <div className="bg-neutral-900 border border-neutral-700 rounded-3xl max-w-xl w-full p-5 shadow-2xl space-y-4">
+    <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4 select-none">
+      <div className="bg-white border-2 border-slate-200 rounded-3xl max-w-2xl w-full p-6 shadow-2xl space-y-5 text-slate-900">
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-neutral-800 pb-3">
-          <div className="flex items-center gap-2">
-            <Coins className="w-6 h-6 text-amber-500" />
+        <div className="flex items-center justify-between border-b-2 border-slate-200 pb-3">
+          <div className="flex items-center gap-3">
+            <div className="p-2.5 rounded-2xl bg-blue-50 border border-blue-200 text-blue-600">
+              <Coins className="w-7 h-7" />
+            </div>
             <div>
-              <h2 className="text-base font-bold text-neutral-100">
+              <h2 className="text-2xl font-black text-black">
                 إدارة الصندوق والورديات (Gestion de Caisse)
               </h2>
-              <p className="text-xs text-neutral-400">
-                الكاشير: <span className="text-amber-300 font-bold">{user?.fullName}</span>
+              <p className="text-sm font-bold text-slate-500 mt-0.5">
+                الكاشير: <span className="text-blue-700 font-black">{user?.fullName}</span>
               </p>
             </div>
           </div>
 
-          <button onClick={onClose} className="p-1 rounded-full bg-neutral-800 text-neutral-400">
-            <X className="w-5 h-5" />
+          <button onClick={onClose} className="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 transition">
+            <X className="w-6 h-6" />
           </button>
         </div>
 
         {/* Tab switchers */}
-        <div className="flex items-center gap-1.5 bg-neutral-950 p-1 rounded-xl border border-neutral-800 text-xs">
+        <div className="flex items-center gap-2 bg-slate-100 p-1.5 rounded-2xl border border-slate-200 text-sm">
           <button
             onClick={() => setActiveTab('CURRENT')}
-            className={`flex-1 py-1.5 rounded-lg font-bold transition ${
-              activeTab === 'CURRENT' ? 'bg-amber-500 text-black shadow' : 'text-neutral-400'
+            className={`flex-1 py-2.5 rounded-xl font-black transition cursor-pointer ${
+              activeTab === 'CURRENT'
+                ? 'bg-blue-600 text-white shadow-md'
+                : 'text-slate-700 hover:text-black hover:bg-white/60'
             }`}
           >
             الوردية الحالية
@@ -137,16 +141,20 @@ export const CashRegisterModal: React.FC<CashRegisterModalProps> = ({ isOpen, on
           <button
             onClick={() => setActiveTab('MOVEMENT')}
             disabled={!isShiftOpen}
-            className={`flex-1 py-1.5 rounded-lg font-bold transition disabled:opacity-30 ${
-              activeTab === 'MOVEMENT' ? 'bg-amber-500 text-black shadow' : 'text-neutral-400'
+            className={`flex-1 py-2.5 rounded-xl font-black transition disabled:opacity-30 cursor-pointer ${
+              activeTab === 'MOVEMENT'
+                ? 'bg-blue-600 text-white shadow-md'
+                : 'text-slate-700 hover:text-black hover:bg-white/60'
             }`}
           >
             إيداع / سحب نقدي
           </button>
           <button
             onClick={() => setActiveTab('HISTORY')}
-            className={`flex-1 py-1.5 rounded-lg font-bold transition ${
-              activeTab === 'HISTORY' ? 'bg-amber-500 text-black shadow' : 'text-neutral-400'
+            className={`flex-1 py-2.5 rounded-xl font-black transition cursor-pointer ${
+              activeTab === 'HISTORY'
+                ? 'bg-blue-600 text-white shadow-md'
+                : 'text-slate-700 hover:text-black hover:bg-white/60'
             }`}
           >
             سجل الورديات السابقة
@@ -155,27 +163,27 @@ export const CashRegisterModal: React.FC<CashRegisterModalProps> = ({ isOpen, on
 
         {/* TAB 1: CURRENT SHIFT */}
         {activeTab === 'CURRENT' && (
-          <div className="space-y-3">
+          <div className="space-y-4">
             {isShiftOpen && currentShift ? (
-              <div className="space-y-3">
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center font-mono">
-                  <div className="p-2.5 rounded-xl bg-neutral-950 border border-neutral-800">
-                    <span className="text-[10px] text-neutral-400 font-sans block">الرصيد الافتتاحي</span>
-                    <span className="text-sm font-bold text-neutral-200">
+              <div className="space-y-4">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
+                  <div className="p-3.5 rounded-2xl bg-slate-50 border-2 border-slate-200">
+                    <span className="text-xs text-slate-500 font-black block">الرصيد الافتتاحي</span>
+                    <span className="text-lg font-black text-slate-900 mt-1 block">
                       {Number(currentShift.openingCash).toLocaleString()} DA
                     </span>
                   </div>
 
-                  <div className="p-2.5 rounded-xl bg-neutral-950 border border-neutral-800">
-                    <span className="text-[10px] text-emerald-400 font-sans block">مبيعات نقدية</span>
-                    <span className="text-sm font-bold text-emerald-400">
+                  <div className="p-3.5 rounded-2xl bg-emerald-50 border-2 border-emerald-200">
+                    <span className="text-xs text-emerald-700 font-black block">مبيعات نقدية</span>
+                    <span className="text-lg font-black text-emerald-800 mt-1 block">
                       +{Number(currentShift.totalCashSales).toLocaleString()} DA
                     </span>
                   </div>
 
-                  <div className="p-2.5 rounded-xl bg-neutral-950 border border-neutral-800">
-                    <span className="text-[10px] text-blue-400 font-sans block">مبيعات البطاقة/Baridi</span>
-                    <span className="text-sm font-bold text-blue-400">
+                  <div className="p-3.5 rounded-2xl bg-blue-50 border-2 border-blue-200">
+                    <span className="text-xs text-blue-700 font-black block">مبيعات البطاقة/Baridi</span>
+                    <span className="text-lg font-black text-blue-800 mt-1 block">
                       {(
                         Number(currentShift.totalCardSales) +
                         Number(currentShift.totalBaridimobSales) +
@@ -185,9 +193,9 @@ export const CashRegisterModal: React.FC<CashRegisterModalProps> = ({ isOpen, on
                     </span>
                   </div>
 
-                  <div className="p-2.5 rounded-xl bg-neutral-950 border border-neutral-800">
-                    <span className="text-[10px] text-red-400 font-sans block">مصاريف / سحوبات</span>
-                    <span className="text-sm font-bold text-red-400">
+                  <div className="p-3.5 rounded-2xl bg-red-50 border-2 border-red-200">
+                    <span className="text-xs text-red-700 font-black block">مصاريف / سحوبات</span>
+                    <span className="text-lg font-black text-red-800 mt-1 block">
                       -(
                       {(
                         Number(currentShift.totalExpenses) + Number(currentShift.totalCashOut)
@@ -197,50 +205,50 @@ export const CashRegisterModal: React.FC<CashRegisterModalProps> = ({ isOpen, on
                   </div>
                 </div>
 
-                {/* Big Expected Cash */}
-                <div className="p-3 bg-neutral-950 border border-amber-600/30 rounded-2xl flex items-center justify-between font-mono">
+                {/* Big Expected Cash (28px font) */}
+                <div className="p-4 bg-blue-50/70 border-2 border-blue-200 rounded-2xl flex items-center justify-between">
                   <div>
-                    <span className="text-xs text-neutral-400 font-sans block font-bold">
+                    <span className="text-sm text-slate-600 block font-black">
                       النقد المتوقع تواجده في الدرج (Espèces Attendues):
                     </span>
-                    <span className="text-2xl font-black text-amber-400">
+                    <span className="text-3xl font-black text-blue-700 mt-0.5 block">
                       {Number(currentShift.expectedCash || 0).toLocaleString()} DA
                     </span>
                   </div>
                   <button
                     onClick={openCashDrawer}
-                    className="px-3 py-1.5 bg-neutral-800 hover:bg-neutral-700 text-amber-300 font-sans font-bold text-xs rounded-xl border border-neutral-700"
+                    className="px-4 py-2.5 bg-white hover:bg-slate-50 text-blue-700 font-black text-sm rounded-xl border-2 border-blue-300 shadow-sm active:scale-95 transition cursor-pointer"
                   >
                     فتح الدرج
                   </button>
                 </div>
 
                 {/* Close Shift Section */}
-                <div className="p-3 bg-neutral-950/60 border border-neutral-800 rounded-2xl space-y-2">
-                  <h4 className="text-xs font-bold text-red-400 flex items-center gap-1.5">
-                    <Lock className="w-4 h-4" />
+                <div className="p-4 bg-slate-50 border-2 border-slate-200 rounded-2xl space-y-3">
+                  <h4 className="text-sm font-black text-red-700 flex items-center gap-2">
+                    <Lock className="w-5 h-5 text-red-600" />
                     <span>إغلاق الوردية (Clôture de Caisse / Rapport Z)</span>
                   </h4>
 
-                  <div className="grid grid-cols-2 gap-2 text-xs">
+                  <div className="grid grid-cols-2 gap-3 text-sm">
                     <div>
-                      <label className="block text-neutral-400 mb-1">المبلغ الفعلي في الدرج (DA):</label>
+                      <label className="block text-slate-700 font-bold mb-1">المبلغ الفعلي في الدرج (DA):</label>
                       <input
                         type="number"
                         value={closingCashInput}
                         onChange={(e) => setClosingCashInput(e.target.value)}
                         placeholder="المبلغ بعد الجرد"
-                        className="w-full bg-neutral-900 border border-neutral-700 rounded-lg p-2 text-amber-300 font-mono font-bold"
+                        className="w-full bg-white border-2 border-slate-200 rounded-xl p-3 text-slate-900 font-black text-lg focus:outline-none focus:border-blue-600"
                       />
                     </div>
                     <div>
-                      <label className="block text-neutral-400 mb-1">ملاحظات الإغلاق:</label>
+                      <label className="block text-slate-700 font-bold mb-1">ملاحظات الإغلاق:</label>
                       <input
                         type="text"
                         value={closeNotesInput}
                         onChange={(e) => setCloseNotesInput(e.target.value)}
                         placeholder="أي ملاحظات..."
-                        className="w-full bg-neutral-900 border border-neutral-700 rounded-lg p-2 text-neutral-100"
+                        className="w-full bg-white border-2 border-slate-200 rounded-xl p-3 text-slate-900 font-bold text-base focus:outline-none focus:border-blue-600"
                       />
                     </div>
                   </div>
@@ -248,7 +256,7 @@ export const CashRegisterModal: React.FC<CashRegisterModalProps> = ({ isOpen, on
                   <button
                     onClick={handleCloseShift}
                     disabled={!closingCashInput || isSubmitting}
-                    className="w-full py-2.5 bg-red-600 hover:bg-red-500 disabled:opacity-40 text-white font-bold text-xs rounded-xl transition active:scale-95"
+                    className="w-full py-3.5 bg-red-600 hover:bg-red-700 disabled:opacity-40 text-white font-black text-base rounded-xl transition active:scale-95 shadow-md cursor-pointer"
                   >
                     تأكيد إغلاق الوردية
                   </button>
@@ -256,17 +264,19 @@ export const CashRegisterModal: React.FC<CashRegisterModalProps> = ({ isOpen, on
               </div>
             ) : (
               /* Open Shift Form */
-              <div className="p-6 bg-neutral-950 rounded-2xl border border-neutral-800 text-center space-y-4">
-                <AlertTriangle className="w-12 h-12 text-amber-500 mx-auto" />
+              <div className="p-8 bg-slate-50 rounded-2xl border-2 border-slate-200 text-center space-y-4">
+                <div className="w-16 h-16 mx-auto rounded-2xl bg-blue-100 flex items-center justify-center text-blue-600">
+                  <AlertTriangle className="w-9 h-9" />
+                </div>
                 <div>
-                  <h3 className="text-base font-bold text-neutral-100">الصندوق مغلق حالياً</h3>
-                  <p className="text-xs text-neutral-400 mt-1">
+                  <h3 className="text-xl font-black text-black">الصندوق مغلق حالياً</h3>
+                  <p className="text-sm font-bold text-slate-500 mt-1">
                     يرجى إدخال الرصيد الافتتاحي (الفكة الأولية) لبدء استقبال الطلبات
                   </p>
                 </div>
 
-                <div className="max-w-xs mx-auto">
-                  <label className="block text-xs text-neutral-400 mb-1 text-right">
+                <div className="max-w-sm mx-auto text-right">
+                  <label className="block text-sm font-bold text-slate-700 mb-1.5">
                     الرصيد الافتتاحي بالدينار (DA):
                   </label>
                   <input
@@ -274,14 +284,14 @@ export const CashRegisterModal: React.FC<CashRegisterModalProps> = ({ isOpen, on
                     value={openingCashInput}
                     onChange={(e) => setOpeningCashInput(e.target.value)}
                     placeholder="مثال: 5000"
-                    className="w-full bg-neutral-900 border border-neutral-700 rounded-xl p-3 text-center text-lg font-mono font-black text-amber-400"
+                    className="w-full bg-white border-2 border-slate-200 rounded-2xl p-4 text-center text-2xl font-black text-blue-700 focus:outline-none focus:border-blue-600 shadow-sm"
                   />
                 </div>
 
                 <button
                   onClick={handleOpenShift}
                   disabled={isSubmitting}
-                  className="w-full max-w-xs mx-auto py-3 bg-emerald-600 hover:bg-emerald-500 text-black font-black text-sm rounded-xl shadow-lg transition active:scale-95 block"
+                  className="w-full max-w-sm mx-auto py-4 bg-blue-600 hover:bg-blue-700 text-white font-black text-lg rounded-2xl shadow-xl transition active:scale-95 block cursor-pointer"
                 >
                   فتح الوردية (Ouvrir la caisse)
                 </button>
@@ -292,59 +302,59 @@ export const CashRegisterModal: React.FC<CashRegisterModalProps> = ({ isOpen, on
 
         {/* TAB 2: CASH MOVEMENTS */}
         {activeTab === 'MOVEMENT' && (
-          <div className="space-y-3 text-xs">
-            <div className="grid grid-cols-2 gap-2">
+          <div className="space-y-4">
+            <div className="grid grid-cols-2 gap-3">
               <button
                 onClick={() => setMovementType('CASH_IN')}
-                className={`p-3 rounded-xl border flex items-center justify-center gap-2 font-bold ${
+                className={`p-3.5 rounded-2xl border-2 flex items-center justify-center gap-2 font-black text-base cursor-pointer ${
                   movementType === 'CASH_IN'
-                    ? 'bg-emerald-500 text-black border-emerald-400'
-                    : 'bg-neutral-800 text-neutral-300 border-neutral-700'
+                    ? 'bg-emerald-600 text-white border-emerald-600 shadow-md ring-2 ring-emerald-300'
+                    : 'bg-white text-slate-800 border-slate-200 hover:bg-slate-50'
                 }`}
               >
-                <ArrowDownRight className="w-4 h-4" />
+                <ArrowDownRight className="w-5 h-5" />
                 <span>إيداع نقدي (Entrée d'argent)</span>
               </button>
 
               <button
                 onClick={() => setMovementType('CASH_OUT')}
-                className={`p-3 rounded-xl border flex items-center justify-center gap-2 font-bold ${
+                className={`p-3.5 rounded-2xl border-2 flex items-center justify-center gap-2 font-black text-base cursor-pointer ${
                   movementType === 'CASH_OUT'
-                    ? 'bg-red-500 text-white border-red-400'
-                    : 'bg-neutral-800 text-neutral-300 border-neutral-700'
+                    ? 'bg-red-600 text-white border-red-600 shadow-md ring-2 ring-red-300'
+                    : 'bg-white text-slate-800 border-slate-200 hover:bg-slate-50'
                 }`}
               >
-                <ArrowUpRight className="w-4 h-4" />
+                <ArrowUpRight className="w-5 h-5" />
                 <span>سحب نقدي (Sortie d'argent)</span>
               </button>
             </div>
 
             <div>
-              <label className="block text-neutral-400 mb-1">المبلغ (DA):</label>
+              <label className="block text-sm font-bold text-slate-700 mb-1">المبلغ (DA):</label>
               <input
                 type="number"
                 value={movementAmount}
                 onChange={(e) => setMovementAmount(e.target.value)}
                 placeholder="مثال: 3000"
-                className="w-full bg-neutral-950 border border-neutral-700 rounded-lg p-2 text-neutral-100 font-mono text-sm"
+                className="w-full bg-slate-50 border-2 border-slate-200 rounded-xl p-3 text-slate-900 font-black text-xl focus:outline-none focus:border-blue-600 focus:bg-white"
               />
             </div>
 
             <div>
-              <label className="block text-neutral-400 mb-1">السبب والبيان:</label>
+              <label className="block text-sm font-bold text-slate-700 mb-1">السبب والبيان:</label>
               <input
                 type="text"
                 value={movementReason}
                 onChange={(e) => setMovementReason(e.target.value)}
                 placeholder="مثال: إضافة فكة للصندوق، شراء مواد عاجلة..."
-                className="w-full bg-neutral-950 border border-neutral-700 rounded-lg p-2 text-neutral-100"
+                className="w-full bg-slate-50 border-2 border-slate-200 rounded-xl p-3 text-slate-900 font-bold text-base focus:outline-none focus:border-blue-600 focus:bg-white"
               />
             </div>
 
             <button
               onClick={handleRecordMovement}
               disabled={isSubmitting || !movementAmount || !movementReason}
-              className="w-full py-2.5 bg-amber-500 hover:bg-amber-400 disabled:opacity-40 text-black font-bold text-xs rounded-xl transition active:scale-95"
+              className="w-full py-4 bg-blue-600 hover:bg-blue-700 disabled:opacity-40 text-white font-black text-lg rounded-2xl transition active:scale-95 shadow-xl cursor-pointer"
             >
               تسجيل الحركة النقدية
             </button>
@@ -353,27 +363,27 @@ export const CashRegisterModal: React.FC<CashRegisterModalProps> = ({ isOpen, on
 
         {/* TAB 3: SHIFTS HISTORY */}
         {activeTab === 'HISTORY' && (
-          <div className="space-y-2 max-h-72 overflow-y-auto no-scrollbar">
+          <div className="space-y-3 max-h-80 overflow-y-auto no-scrollbar">
             {shiftHistory.map((s) => (
-              <div key={s.id} className="p-3 rounded-xl bg-neutral-950 border border-neutral-800 text-xs">
-                <div className="flex items-center justify-between font-bold">
-                  <span className="text-amber-400 font-mono">وردية #{s.shiftNumber}</span>
-                  <span className="text-[10px] text-neutral-400">
+              <div key={s.id} className="p-4 rounded-2xl bg-slate-50 border-2 border-slate-200 text-sm">
+                <div className="flex items-center justify-between font-black">
+                  <span className="text-blue-700 text-base">وردية #{s.shiftNumber}</span>
+                  <span className="text-xs text-slate-500 font-bold">
                     {new Date(s.openedAt).toLocaleDateString('fr-FR')}
                   </span>
                 </div>
-                <div className="grid grid-cols-3 gap-1 mt-2 text-[11px] font-mono">
+                <div className="grid grid-cols-3 gap-2 mt-2 text-sm font-black">
                   <div>
-                    افتتاحي: <span className="text-neutral-300">{Number(s.openingCash)} DA</span>
+                    افتتاحي: <span className="text-slate-800">{Number(s.openingCash).toLocaleString()} DA</span>
                   </div>
                   <div>
-                    مبيعات: <span className="text-emerald-400">{Number(s.totalCashSales)} DA</span>
+                    مبيعات: <span className="text-emerald-700">{Number(s.totalCashSales).toLocaleString()} DA</span>
                   </div>
                   <div>
-                    فارق: <span className="text-amber-300">{Number(s.cashDifference || 0)} DA</span>
+                    فارق: <span className="text-blue-700">{Number(s.cashDifference || 0).toLocaleString()} DA</span>
                   </div>
                 </div>
-                <div className="text-[10px] text-neutral-500 mt-1">الكاشير: {s.cashierName}</div>
+                <div className="text-xs text-slate-500 font-semibold mt-1">الكاشير: {s.cashierName}</div>
               </div>
             ))}
           </div>

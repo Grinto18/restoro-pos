@@ -36,12 +36,22 @@ const MainAppContent: React.FC = () => {
     selectedCustomer,
     clearCart,
     openCashDrawer,
+    refreshShift,
+    refreshHeldOrders,
   } = usePos();
 
   const [activeTab, setActiveTab] = useState<ActiveTab>('pos');
   const [showPaymentModal, setShowPaymentModal] = useState<boolean>(false);
   const [showCashRegisterModal, setShowCashRegisterModal] = useState<boolean>(false);
   const [showHeldOrdersModal, setShowHeldOrdersModal] = useState<boolean>(false);
+
+  // Refresh shift and held orders when user signs in
+  useEffect(() => {
+    if (user && !isLocked) {
+      refreshShift();
+      refreshHeldOrders();
+    }
+  }, [user, isLocked]);
 
   // Global POS Keyboard Shortcuts (F1, F2, F3, F4, F5, F10, F12)
   useEffect(() => {
@@ -76,10 +86,14 @@ const MainAppContent: React.FC = () => {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
 
+  const isCheckingOutRef = React.useRef(false);
+
   // Quick 1-click Cash Checkout
   const handleQuickCheckout = async (printTicket: boolean) => {
-    if (cart.length === 0) return;
+    if (cart.length === 0 || isCheckingOutRef.current) return;
+    isCheckingOutRef.current = true;
     try {
+      const checkoutKey = `chk-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
       const orderRes = await api.createOrder({
         type: orderType,
         tableId: selectedTable?.id,
@@ -89,11 +103,13 @@ const MainAppContent: React.FC = () => {
         deliveryFee: 0,
         notes: null,
         isHeld: false,
+        idempotencyKey: checkoutKey,
       });
 
       await api.processPayment({
         orderId: orderRes.id,
         payments: [{ method: 'CASH', amount: total, tenderAmount: total, changeAmount: 0 }],
+        idempotencyKey: `pay-${checkoutKey}`,
       });
 
       openCashDrawer();
@@ -117,25 +133,27 @@ const MainAppContent: React.FC = () => {
       };
 
       if (printTicket) {
-        // Direct Spool & Thermal Print
+        // Single unified direct spool & thermal print
         const { printerService } = await import('./services/printerService.ts');
         const p = printerService.getProfile();
-        printerService.sendDirectPrintJob(receiptData, p);
-        setReceiptToPrint(receiptData);
+        await printerService.sendDirectPrintJob(receiptData, p);
+        setReceiptToPrint({ ...receiptData, alreadyAutoPrinted: true });
       }
 
       clearCart();
     } catch (err) {
       console.error('Quick checkout failed:', err);
+    } finally {
+      isCheckingOutRef.current = false;
     }
   };
 
   // If loading session
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-neutral-950 flex flex-col items-center justify-center text-amber-400 gap-3">
-        <div className="w-12 h-12 border-4 border-amber-500 border-t-transparent rounded-full animate-spin"></div>
-        <p className="font-bold text-sm font-sans tracking-wide">جاري تشغيل GOLDEN PALACE POS...</p>
+      <div className="min-h-screen bg-white flex flex-col items-center justify-center text-blue-700 gap-4">
+        <div className="w-14 h-14 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+        <p className="font-extrabold text-lg font-sans tracking-wide text-slate-900">جاري تشغيل GOLDEN PALACE POS...</p>
       </div>
     );
   }
@@ -146,7 +164,7 @@ const MainAppContent: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-neutral-950 text-neutral-100 overflow-hidden font-sans">
+    <div className="min-h-screen flex flex-col bg-white text-slate-900 overflow-hidden font-sans">
       {/* 1. Top Header Bar (Terminal metrics, clock, user, shifts, offline status) */}
       <Header
         onOpenCashRegisterModal={() => setShowCashRegisterModal(true)}
@@ -181,10 +199,10 @@ const MainAppContent: React.FC = () => {
         {activeTab === 'customers' && <CustomersManager />}
         {activeTab === 'delivery' && <DeliveryManager />}
         {activeTab === 'caisse' && (
-          <div className="flex-1 flex items-center justify-center p-6 bg-neutral-950">
+          <div className="flex-1 flex items-center justify-center p-6 bg-slate-50">
             <button
               onClick={() => setShowCashRegisterModal(true)}
-              className="py-4 px-8 bg-amber-500 hover:bg-amber-400 text-black font-black text-lg rounded-2xl shadow-xl transition"
+              className="py-5 px-10 bg-blue-600 hover:bg-blue-700 text-white font-black text-xl rounded-2xl shadow-xl transition cursor-pointer"
             >
               فتح لوحة إدارة الصندوق والورديات (F12)
             </button>

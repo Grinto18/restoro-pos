@@ -73,19 +73,13 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose, onS
     }
   };
 
-  // Add split payment method
-  const handleAddSplitEntry = (method: 'CASH' | 'CARD' | 'CCP' | 'BARIDIMOB' | 'OTHER', amount: number) => {
-    const existing = paymentEntries.filter((p) => p.method !== method);
-    setPaymentEntries([...existing, { method, amount }]);
-  };
-
   const handleCompletePayment = async () => {
     if (cart.length === 0) return;
     setIsProcessing(true);
     setErrorMessage('');
 
     try {
-      // 1. Create Order in database (or offline queue)
+      // 1. Create Order in database
       const idempotencyKey = `pay-${Date.now()}-${Math.random().toString(36).substr(2, 6)}`;
       const orderRes = await api.createOrder({
         type: orderType,
@@ -150,16 +144,16 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose, onS
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-sm flex items-center justify-center p-3 select-none">
-      <div className="bg-neutral-900 border border-neutral-700 rounded-3xl max-w-2xl w-full p-5 shadow-2xl space-y-4">
+    <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4 select-none">
+      <div className="bg-white border-2 border-slate-200 rounded-3xl max-w-2xl w-full p-6 shadow-2xl space-y-5 text-slate-900">
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-neutral-800 pb-3">
+        <div className="flex items-center justify-between border-b-2 border-slate-200 pb-3">
           <div>
-            <h2 className="text-lg font-black text-amber-400 flex items-center gap-2">
-              <Banknote className="w-5 h-5 text-amber-500" />
+            <h2 className="text-2xl font-black text-black flex items-center gap-2">
+              <Banknote className="w-7 h-7 text-blue-600" />
               <span>تسديد الفاتورة (Encaissement)</span>
             </h2>
-            <p className="text-xs text-neutral-400">
+            <p className="text-sm font-bold text-slate-500 mt-0.5">
               {orderType === 'DINE_IN' && selectedTable
                 ? `الطاولة ${selectedTable.tableNumber}`
                 : orderType === 'DELIVERY'
@@ -170,59 +164,59 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose, onS
 
           <button
             onClick={onClose}
-            className="p-1.5 rounded-full bg-neutral-800 hover:bg-neutral-700 text-neutral-400"
+            className="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 transition"
           >
-            <X className="w-5 h-5" />
+            <X className="w-6 h-6" />
           </button>
         </div>
 
         {errorMessage && (
-          <div className="p-2.5 rounded-xl bg-red-950/80 border border-red-700/80 text-red-200 text-xs text-center font-bold">
+          <div className="p-3 rounded-2xl bg-red-50 border-2 border-red-200 text-red-700 text-sm text-center font-black">
             {errorMessage}
           </div>
         )}
 
-        {/* Big Display: Total, Tendered, Change */}
-        <div className="grid grid-cols-3 gap-2 bg-neutral-950 p-3 rounded-2xl border border-neutral-800 font-mono text-center">
-          <div className="p-2 rounded-xl bg-neutral-900/60 border border-neutral-800">
-            <span className="text-[10px] text-neutral-400 uppercase font-sans font-bold block">
-              TOTAL À PAYER
+        {/* Big Displays: Total, Tendered, Change (24-30px fonts) */}
+        <div className="grid grid-cols-3 gap-3 bg-slate-50 p-4 rounded-2xl border-2 border-slate-200 text-center">
+          <div className="p-3 rounded-xl bg-white border-2 border-slate-200 shadow-sm">
+            <span className="text-xs text-slate-500 uppercase font-black block">
+              المجموع المطلوب
             </span>
-            <span className="text-xl font-black text-amber-400">
-              {total.toLocaleString()} <span className="text-xs font-normal">DA</span>
-            </span>
-          </div>
-
-          <div className="p-2 rounded-xl bg-neutral-900/60 border border-neutral-800">
-            <span className="text-[10px] text-cyan-400 uppercase font-sans font-bold block">
-              VERSÉ (المقبوض)
-            </span>
-            <span className="text-xl font-black text-cyan-300">
-              {tenderNum.toLocaleString()} <span className="text-xs font-normal">DA</span>
+            <span className="text-2xl font-black text-blue-700">
+              {total.toLocaleString()} <span className="text-sm font-bold text-slate-600">DA</span>
             </span>
           </div>
 
-          <div className="p-2 rounded-xl bg-neutral-900/60 border border-neutral-800">
-            <span className="text-[10px] text-emerald-400 uppercase font-sans font-bold block">
-              RENDU (الباقي للزبون)
+          <div className="p-3 rounded-xl bg-white border-2 border-slate-200 shadow-sm">
+            <span className="text-xs text-slate-500 uppercase font-black block">
+              المبلغ المقبوض
             </span>
-            <span className="text-xl font-black text-emerald-400">
-              {changeDue.toLocaleString()} <span className="text-xs font-normal">DA</span>
+            <span className="text-2xl font-black text-slate-900">
+              {tenderNum.toLocaleString()} <span className="text-sm font-bold text-slate-600">DA</span>
+            </span>
+          </div>
+
+          <div className="p-3 rounded-xl bg-white border-2 border-slate-200 shadow-sm">
+            <span className="text-xs text-slate-500 uppercase font-black block">
+              الباقي للزبون
+            </span>
+            <span className="text-2xl font-black text-emerald-700">
+              {changeDue.toLocaleString()} <span className="text-sm font-bold text-slate-600">DA</span>
             </span>
           </div>
         </div>
 
         {/* Payment Methods Tabs */}
         <div>
-          <label className="block text-xs font-bold text-neutral-300 mb-1.5">
+          <label className="block text-sm font-black text-black mb-2">
             طريقة الدفع (Mode de paiement):
           </label>
-          <div className="grid grid-cols-4 gap-2">
+          <div className="grid grid-cols-4 gap-2.5">
             {[
-              { id: 'CASH', label: 'نقدي (Espèces)', icon: Banknote, color: 'hover:border-emerald-500' },
-              { id: 'CARD', label: 'بطاقة بنكية (Carte/TPE)', icon: CreditCard, color: 'hover:border-blue-500' },
-              { id: 'BARIDIMOB', label: 'بريدي موب (BaridiMob)', icon: Smartphone, color: 'hover:border-amber-500' },
-              { id: 'CCP', label: 'حساب CCP / صك', icon: Building, color: 'hover:border-purple-500' },
+              { id: 'CASH', label: 'نقدي (Espèces)', icon: Banknote },
+              { id: 'CARD', label: 'بطاقة بنكية (Carte)', icon: CreditCard },
+              { id: 'BARIDIMOB', label: 'بريدي موب (BaridiMob)', icon: Smartphone },
+              { id: 'CCP', label: 'حساب CCP / صك', icon: Building },
             ].map((m) => {
               const Icon = m.icon;
               const isSelected = activeMethod === m.id;
@@ -233,13 +227,13 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose, onS
                     setActiveMethod(m.id as any);
                     setPaymentEntries([{ method: m.id as any, amount: total }]);
                   }}
-                  className={`p-2.5 rounded-xl border flex flex-col items-center justify-center gap-1 transition text-xs font-bold ${
+                  className={`p-3 rounded-2xl border-2 flex flex-col items-center justify-center gap-1.5 transition text-sm font-black cursor-pointer ${
                     isSelected
-                      ? 'bg-amber-500 text-black border-amber-400 shadow-md ring-2 ring-amber-400/50'
-                      : `bg-neutral-800 text-neutral-300 border-neutral-700 ${m.color}`
+                      ? 'bg-blue-600 text-white border-blue-600 shadow-md ring-2 ring-blue-300'
+                      : 'bg-slate-50 text-slate-800 border-slate-200 hover:bg-blue-50/50 hover:border-blue-300'
                   }`}
                 >
-                  <Icon className="w-5 h-5" />
+                  <Icon className="w-6 h-6" />
                   <span className="text-center">{m.label}</span>
                 </button>
               );
@@ -249,25 +243,25 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose, onS
 
         {/* Numpad & Quick Cash Notes (100, 200, 500, 1000, 2000 DA) */}
         {activeMethod === 'CASH' && (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-1">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-1">
             {/* Quick Cash Banknotes */}
-            <div className="space-y-1.5">
-              <label className="block text-[11px] text-neutral-400 font-bold">
+            <div className="space-y-2">
+              <label className="block text-xs font-black text-slate-600">
                 أوراق نقدية سريعة (Billets):
               </label>
-              <div className="grid grid-cols-3 gap-1.5">
+              <div className="grid grid-cols-3 gap-2">
                 {[100, 200, 500, 1000, 2000].map((noteVal) => (
                   <button
                     key={noteVal}
                     onClick={() => handleAddTender(noteVal)}
-                    className="p-2 rounded-xl bg-neutral-800 hover:bg-neutral-700 border border-neutral-700 text-amber-300 font-mono font-bold text-xs active:scale-95 transition"
+                    className="p-3 rounded-xl bg-slate-100 hover:bg-blue-50 border-2 border-slate-200 hover:border-blue-300 text-blue-700 font-black text-base active:scale-95 transition shadow-sm"
                   >
                     +{noteVal} DA
                   </button>
                 ))}
                 <button
                   onClick={() => setTenderInput(String(total))}
-                  className="p-2 rounded-xl bg-emerald-950/80 hover:bg-emerald-900 border border-emerald-700 text-emerald-300 font-bold text-xs active:scale-95 transition"
+                  className="p-3 rounded-xl bg-blue-50 hover:bg-blue-100 border-2 border-blue-300 text-blue-800 font-black text-sm active:scale-95 transition shadow-sm"
                 >
                   المبلغ الدقيق
                 </button>
@@ -275,13 +269,13 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose, onS
             </div>
 
             {/* Touch Numpad */}
-            <div className="grid grid-cols-4 gap-1 font-mono text-sm">
+            <div className="grid grid-cols-4 gap-1.5 font-mono text-base">
               {['7', '8', '9', 'C', '4', '5', '6', 'EXACT', '1', '2', '3', '00', '0', '.'].map(
                 (btn) => (
                   <button
                     key={btn}
                     onClick={() => handleNumpadPress(btn)}
-                    className="p-2 bg-neutral-800 hover:bg-neutral-700 rounded-lg text-neutral-200 font-bold active:scale-95 transition flex items-center justify-center"
+                    className="p-2.5 bg-slate-100 hover:bg-slate-200 border border-slate-200 rounded-xl text-slate-900 font-black active:scale-95 transition flex items-center justify-center text-lg"
                   >
                     {btn}
                   </button>
@@ -292,28 +286,28 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose, onS
         )}
 
         {/* Bottom Options & Submit */}
-        <div className="pt-2 border-t border-neutral-800 flex items-center justify-between gap-3">
-          <label className="flex items-center gap-2 cursor-pointer text-xs text-neutral-300">
+        <div className="pt-3 border-t-2 border-slate-200 flex items-center justify-between gap-4">
+          <label className="flex items-center gap-2.5 cursor-pointer text-sm font-bold text-slate-700">
             <input
               type="checkbox"
               checked={printReceiptOnSuccess}
               onChange={(e) => setPrintReceiptOnSuccess(e.target.checked)}
-              className="rounded bg-neutral-800 border-neutral-700 text-amber-500 focus:ring-amber-500 w-4 h-4"
+              className="rounded bg-slate-100 border-slate-300 text-blue-600 focus:ring-blue-500 w-5 h-5 cursor-pointer"
             />
-            <Printer className="w-4 h-4 text-amber-400" />
+            <Printer className="w-5 h-5 text-blue-600" />
             <span>طباعة الفاتورة تلقائياً عند الدفع</span>
           </label>
 
           <button
             onClick={handleCompletePayment}
             disabled={isProcessing}
-            className="flex-1 py-3 px-4 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500 disabled:opacity-50 text-black font-black text-sm rounded-xl shadow-lg shadow-emerald-500/20 flex items-center justify-center gap-2 active:scale-95 transition"
+            className="flex-1 py-4 px-6 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white font-black text-xl rounded-2xl shadow-xl flex items-center justify-center gap-2 active:scale-95 transition cursor-pointer"
           >
             {isProcessing ? (
               <span>جاري المعالجة...</span>
             ) : (
               <>
-                <Check className="w-5 h-5 stroke-[2.5]" />
+                <Check className="w-6 h-6 stroke-[3]" />
                 <span>تأكيد الدفع (Valider le paiement)</span>
               </>
             )}

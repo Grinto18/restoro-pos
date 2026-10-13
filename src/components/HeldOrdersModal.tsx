@@ -52,58 +52,65 @@ export const HeldOrdersModal: React.FC<HeldOrdersModalProps> = ({ isOpen, onClos
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-sm flex items-center justify-center p-3 select-none">
-      <div className="bg-neutral-900 border border-neutral-700 rounded-3xl max-w-lg w-full p-5 shadow-2xl space-y-4">
-        <div className="flex items-center justify-between border-b border-neutral-800 pb-2">
-          <div className="flex items-center gap-2">
-            <PauseCircle className="w-5 h-5 text-amber-500" />
-            <h3 className="font-bold text-base text-amber-400">
-              الطلبات المعلقة في الانتظار (Clients en attente)
-            </h3>
+    <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4 select-none">
+      <div className="bg-white border-2 border-slate-200 rounded-3xl max-w-xl w-full p-6 shadow-2xl space-y-5 text-slate-900">
+        <div className="flex items-center justify-between border-b-2 border-slate-200 pb-3">
+          <div className="flex items-center gap-3">
+            <div className="p-2.5 rounded-2xl bg-blue-50 border border-blue-200 text-blue-600">
+              <PauseCircle className="w-7 h-7" />
+            </div>
+            <div>
+              <h3 className="font-black text-2xl text-black">
+                الطلبات المعلقة في الانتظار (Clients en attente)
+              </h3>
+              <p className="text-sm font-bold text-slate-500 mt-0.5">
+                {heldOrders.length} طلبات معلقة محفوظة
+              </p>
+            </div>
           </div>
-          <button onClick={onClose} className="p-1 rounded-full bg-neutral-800 text-neutral-400">
-            <X className="w-5 h-5" />
+          <button onClick={onClose} className="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 transition">
+            <X className="w-6 h-6" />
           </button>
         </div>
 
-        <div className="space-y-2 max-h-80 overflow-y-auto no-scrollbar">
+        <div className="space-y-3 max-h-80 overflow-y-auto no-scrollbar">
           {heldOrders.length === 0 ? (
-            <div className="py-8 text-center text-xs text-neutral-500">
+            <div className="py-12 text-center text-slate-400 font-bold text-base">
               لا توجد طلبات معلقة حالياً
             </div>
           ) : (
             heldOrders.map((ord) => (
               <div
                 key={ord.id}
-                className="bg-neutral-950 p-3 rounded-2xl border border-neutral-800 flex items-center justify-between gap-3 text-xs"
+                className="bg-slate-50 p-4 rounded-2xl border-2 border-slate-200 flex items-center justify-between gap-3 text-sm shadow-sm"
               >
                 <div>
-                  <div className="font-mono font-bold text-sm text-neutral-200">
+                  <div className="font-black text-lg text-slate-900">
                     {ord.orderNumber}
                   </div>
-                  <div className="text-[11px] text-neutral-400 mt-0.5">
+                  <div className="text-xs font-bold text-slate-500 mt-0.5">
                     {ord.type === 'DINE_IN' ? `طاولة ${ord.tableNumber || '—'}` : ord.type}
                   </div>
-                  <div className="text-amber-400 font-mono font-bold mt-1">
+                  <div className="text-blue-700 font-black text-xl mt-1">
                     {Number(ord.total).toLocaleString()} DA
                   </div>
                 </div>
 
-                <div className="flex items-center gap-1.5">
+                <div className="flex items-center gap-2">
                   <button
                     onClick={() => handleResume(ord)}
-                    className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-bold flex items-center gap-1 active:scale-95 transition"
+                    className="px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-black text-sm flex items-center gap-1.5 active:scale-95 transition shadow cursor-pointer"
                   >
-                    <PlayCircle className="w-4 h-4" />
+                    <PlayCircle className="w-5 h-5" />
                     <span>استئناف الطلب</span>
                   </button>
 
                   <button
                     onClick={() => handleCancelHeld(ord.id)}
-                    className="p-1.5 bg-red-950/60 hover:bg-red-900/80 text-red-300 rounded-xl border border-red-800/40"
-                    title="إلغاء"
+                    className="p-3 bg-red-50 hover:bg-red-100 text-red-600 rounded-xl border border-red-200 active:scale-95 transition cursor-pointer"
+                    title="إلغاء الطلب"
                   >
-                    <Trash2 className="w-4 h-4" />
+                    <Trash2 className="w-5 h-5" />
                   </button>
                 </div>
               </div>

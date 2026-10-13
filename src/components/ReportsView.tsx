@@ -102,95 +102,96 @@ export const ReportsView: React.FC = () => {
   };
 
   return (
-    <div className="flex-1 flex flex-col h-[calc(100vh-84px)] overflow-hidden bg-neutral-950 p-4 select-none">
+    <div className="flex-1 flex flex-col h-[calc(100vh-84px)] overflow-hidden bg-slate-50 p-5 select-none text-slate-900">
       {/* Top Header */}
-      <div className="flex items-center justify-between gap-3 bg-neutral-900 p-3 rounded-2xl border border-neutral-800 shrink-0">
-        <div className="flex items-center gap-2">
-          <div className="font-bold text-sm text-green-400 flex items-center gap-1.5 pl-3 border-l border-neutral-800">
-            <BarChart3 className="w-5 h-5 text-green-500" />
+      <div className="flex items-center justify-between gap-4 bg-white p-4 rounded-3xl border-2 border-slate-200 shadow-sm shrink-0">
+        <div className="flex items-center gap-3">
+          <div className="font-black text-xl text-black flex items-center gap-2 pl-3 border-l-2 border-slate-200">
+            <BarChart3 className="w-6 h-6 text-blue-600" />
             <span>لوحة التقارير والإحصائيات (Statistiques)</span>
           </div>
 
-          <div className="flex items-center gap-2 text-xs">
+          <div className="flex items-center gap-2 text-sm font-bold">
             <input
               type="date"
               value={startDate}
               onChange={(e) => setStartDate(e.target.value)}
-              className="bg-neutral-950 border border-neutral-700 rounded-lg p-1.5 text-neutral-100 font-mono"
+              className="bg-slate-50 border-2 border-slate-200 rounded-xl px-3 py-2 text-slate-900 font-mono"
             />
-            <span className="text-neutral-500">إلى</span>
+            <span className="text-slate-400">إلى</span>
             <input
               type="date"
               value={endDate}
               onChange={(e) => setEndDate(e.target.value)}
-              className="bg-neutral-950 border border-neutral-700 rounded-lg p-1.5 text-neutral-100 font-mono"
+              className="bg-slate-50 border-2 border-slate-200 rounded-xl px-3 py-2 text-slate-900 font-mono"
             />
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
           <button
             onClick={handleExportCSV}
-            className="bg-neutral-800 hover:bg-neutral-700 text-neutral-200 px-3 py-1.5 rounded-xl border border-neutral-700 text-xs font-bold transition flex items-center gap-1.5"
+            className="bg-slate-100 hover:bg-slate-200 text-slate-800 px-4 py-2.5 rounded-2xl border border-slate-300 text-sm font-black transition flex items-center gap-2 shadow-sm cursor-pointer"
           >
-            <Download className="w-3.5 h-3.5" />
-            <span>تصدير CSV / Excel</span>
+            <Download className="w-4 h-4 text-blue-600" />
+            <span>تصدير Excel / CSV</span>
           </button>
 
           <button
             onClick={loadReports}
-            className="p-2 rounded-xl bg-neutral-800 hover:bg-neutral-700 text-neutral-300"
+            className="p-2.5 rounded-2xl bg-slate-100 hover:bg-slate-200 border border-slate-300 text-slate-700 cursor-pointer"
+            title="تحديث"
           >
-            <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
+            <RefreshCw className={`w-5 h-5 ${isLoading ? 'animate-spin text-blue-600' : ''}`} />
           </button>
         </div>
       </div>
 
-      {/* Main Stats Grid */}
+      {/* Main Stats Grid (24-30px metrics) */}
       {dashboard && (
-        <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-2.5 pt-3 shrink-0">
-          <div className="p-3 bg-neutral-900 rounded-2xl border border-neutral-800">
-            <span className="text-[11px] text-neutral-400 font-bold block">مبيعات اليوم (Ventes)</span>
-            <span className="text-xl font-black text-amber-400 font-mono">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 pt-4 shrink-0">
+          <div className="p-4 bg-white rounded-3xl border-2 border-slate-200 shadow-sm">
+            <span className="text-xs text-slate-500 font-black block">مبيعات اليوم (Ventes)</span>
+            <span className="text-2xl font-black text-blue-700 mt-1 block">
               {Number(dashboard.salesToday || 0).toLocaleString()}{' '}
-              <span className="text-xs font-normal">DA</span>
+              <span className="text-sm font-bold text-slate-600">DA</span>
             </span>
           </div>
 
-          <div className="p-3 bg-neutral-900 rounded-2xl border border-neutral-800">
-            <span className="text-[11px] text-neutral-400 font-bold block">عدد الطلبات (Bons)</span>
-            <span className="text-xl font-black text-cyan-400 font-mono">
+          <div className="p-4 bg-white rounded-3xl border-2 border-slate-200 shadow-sm">
+            <span className="text-xs text-slate-500 font-black block">عدد الطلبات (Bons)</span>
+            <span className="text-2xl font-black text-slate-900 mt-1 block">
               {dashboard.orderCount || 0}
             </span>
           </div>
 
-          <div className="p-3 bg-neutral-900 rounded-2xl border border-neutral-800">
-            <span className="text-[11px] text-neutral-400 font-bold block">متوسط الفاتورة</span>
-            <span className="text-xl font-black text-blue-400 font-mono">
+          <div className="p-4 bg-white rounded-3xl border-2 border-slate-200 shadow-sm">
+            <span className="text-xs text-slate-500 font-black block">متوسط الفاتورة</span>
+            <span className="text-2xl font-black text-blue-700 mt-1 block">
               {Number(dashboard.averageOrderValue || 0).toLocaleString()}{' '}
-              <span className="text-xs font-normal">DA</span>
+              <span className="text-sm font-bold text-slate-600">DA</span>
             </span>
           </div>
 
-          <div className="p-3 bg-neutral-900 rounded-2xl border border-neutral-800">
-            <span className="text-[11px] text-red-400 font-bold block">المصاريف اليومية</span>
-            <span className="text-xl font-black text-red-400 font-mono">
+          <div className="p-4 bg-white rounded-3xl border-2 border-slate-200 shadow-sm">
+            <span className="text-xs text-red-600 font-black block">المصاريف اليومية</span>
+            <span className="text-2xl font-black text-red-600 mt-1 block">
               -{Number(dashboard.expensesToday || 0).toLocaleString()}{' '}
-              <span className="text-xs font-normal">DA</span>
+              <span className="text-sm font-bold text-slate-600">DA</span>
             </span>
           </div>
 
-          <div className="p-3 bg-neutral-900 rounded-2xl border border-neutral-800">
-            <span className="text-[11px] text-emerald-400 font-bold block">صافي المبيعات</span>
-            <span className="text-xl font-black text-emerald-400 font-mono">
+          <div className="p-4 bg-white rounded-3xl border-2 border-slate-200 shadow-sm">
+            <span className="text-xs text-emerald-700 font-black block">صافي المبيعات</span>
+            <span className="text-2xl font-black text-emerald-700 mt-1 block">
               {Number(dashboard.netSales || 0).toLocaleString()}{' '}
-              <span className="text-xs font-normal">DA</span>
+              <span className="text-sm font-bold text-slate-600">DA</span>
             </span>
           </div>
 
-          <div className="p-3 bg-neutral-900 rounded-2xl border border-neutral-800">
-            <span className="text-[11px] text-yellow-400 font-bold block">مواد قاربت النفاذ</span>
-            <span className="text-xl font-black text-yellow-400 font-mono">
+          <div className="p-4 bg-white rounded-3xl border-2 border-slate-200 shadow-sm">
+            <span className="text-xs text-blue-600 font-black block">مواد قاربت النفاذ</span>
+            <span className="text-2xl font-black text-slate-900 mt-1 block">
               {dashboard.lowStockCount || 0}
             </span>
           </div>
@@ -198,26 +199,26 @@ export const ReportsView: React.FC = () => {
       )}
 
       {/* Middle row: Top Products & Payment Methods Breakdown */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-3 shrink-0">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4 shrink-0">
         {/* Top Selling Products */}
-        <div className="bg-neutral-900 rounded-2xl border border-neutral-800 p-3 space-y-2">
-          <h4 className="text-xs font-bold text-amber-400 flex items-center gap-1.5">
-            <TrendingUp className="w-4 h-4" />
+        <div className="bg-white rounded-3xl border-2 border-slate-200 p-4 space-y-3 shadow-sm">
+          <h4 className="text-base font-black text-black flex items-center gap-2">
+            <TrendingUp className="w-5 h-5 text-blue-600" />
             <span>الأطباق الأكثر طلباً (Plats Populaires)</span>
           </h4>
-          <div className="space-y-1.5">
+          <div className="space-y-2">
             {dashboard?.topProducts?.map((p: any, i: number) => (
               <div
                 key={i}
-                className="flex items-center justify-between bg-neutral-950 p-2 rounded-xl text-xs"
+                className="flex items-center justify-between bg-slate-50 p-3 rounded-2xl border border-slate-200 text-sm"
               >
-                <div className="flex items-center gap-2">
-                  <span className="w-5 h-5 rounded-full bg-neutral-800 font-mono text-[10px] font-bold flex items-center justify-center text-amber-400">
+                <div className="flex items-center gap-3">
+                  <span className="w-7 h-7 rounded-full bg-blue-100 text-blue-700 font-black text-xs flex items-center justify-center">
                     {i + 1}
                   </span>
-                  <span className="font-bold text-neutral-200">{p.nameAr}</span>
+                  <span className="font-black text-slate-900">{p.nameAr}</span>
                 </div>
-                <div className="font-mono text-cyan-400 font-bold">
+                <div className="font-black text-blue-700">
                   {p.qty} طلب ({Number(p.total).toLocaleString()} DA)
                 </div>
               </div>
@@ -226,19 +227,19 @@ export const ReportsView: React.FC = () => {
         </div>
 
         {/* Sales by Payment Method */}
-        <div className="bg-neutral-900 rounded-2xl border border-neutral-800 p-3 space-y-2">
-          <h4 className="text-xs font-bold text-cyan-400 flex items-center gap-1.5">
-            <CreditCard className="w-4 h-4" />
+        <div className="bg-white rounded-3xl border-2 border-slate-200 p-4 space-y-3 shadow-sm">
+          <h4 className="text-base font-black text-black flex items-center gap-2">
+            <CreditCard className="w-5 h-5 text-blue-600" />
             <span>توزيع المبيعات حسب طريقة الدفع</span>
           </h4>
-          <div className="space-y-1.5">
+          <div className="space-y-2">
             {dashboard?.paymentMethods?.map((m: any, i: number) => (
               <div
                 key={i}
-                className="flex items-center justify-between bg-neutral-950 p-2 rounded-xl text-xs"
+                className="flex items-center justify-between bg-slate-50 p-3 rounded-2xl border border-slate-200 text-sm"
               >
-                <span className="font-bold text-neutral-300">{m.method}</span>
-                <div className="font-mono font-bold text-amber-400">
+                <span className="font-black text-slate-900">{m.method}</span>
+                <div className="font-black text-blue-700">
                   {Number(m.total).toLocaleString()} DA ({m.count} عملية)
                 </div>
               </div>
@@ -248,51 +249,51 @@ export const ReportsView: React.FC = () => {
       </div>
 
       {/* Sales Table */}
-      <div className="flex-1 bg-neutral-900 rounded-2xl border border-neutral-800 overflow-hidden flex flex-col mt-3">
+      <div className="flex-1 bg-white rounded-3xl border-2 border-slate-200 overflow-hidden flex flex-col mt-4 shadow-sm">
         <div className="overflow-x-auto flex-1 no-scrollbar">
-          <table className="w-full text-right text-xs">
-            <thead className="bg-neutral-950 text-neutral-400 border-b border-neutral-800 font-bold">
+          <table className="w-full text-right text-sm">
+            <thead className="bg-slate-100 text-slate-800 border-b-2 border-slate-200 font-black">
               <tr>
-                <th className="p-3">رقم الفاتورة</th>
-                <th className="p-3">التاريخ والوقت</th>
-                <th className="p-3">نوع الطلب</th>
-                <th className="p-3">المبلغ الإجمالي (DA)</th>
-                <th className="p-3">حالة الدفع</th>
-                <th className="p-3">الكاشير</th>
-                <th className="p-3 text-center">إعادة طباعة</th>
+                <th className="p-4">رقم الفاتورة</th>
+                <th className="p-4">التاريخ والوقت</th>
+                <th className="p-4">نوع الطلب</th>
+                <th className="p-4">المبلغ الإجمالي (DA)</th>
+                <th className="p-4">حالة الدفع</th>
+                <th className="p-4">الكاشير</th>
+                <th className="p-4 text-center">إعادة طباعة</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-neutral-800/60 font-medium">
+            <tbody className="divide-y divide-slate-200 font-bold">
               {salesList.map((s) => (
-                <tr key={s.id} className="hover:bg-neutral-800/50 transition">
-                  <td className="p-3 font-mono font-bold text-amber-400">{s.orderNumber}</td>
-                  <td className="p-3 font-mono text-neutral-400">
+                <tr key={s.id} className="hover:bg-blue-50/40 transition">
+                  <td className="p-4 font-black text-black">{s.orderNumber}</td>
+                  <td className="p-4 text-slate-600 font-medium">
                     {new Date(s.createdAt).toLocaleString('fr-FR')}
                   </td>
-                  <td className="p-3 text-neutral-300">{s.type}</td>
-                  <td className="p-3 font-mono font-bold text-neutral-100 text-sm">
+                  <td className="p-4 text-slate-800">{s.type}</td>
+                  <td className="p-4 font-black text-blue-700 text-lg">
                     {Number(s.total).toLocaleString()} DA
                   </td>
-                  <td className="p-3">
+                  <td className="p-4">
                     <span
-                      className={`px-2 py-0.5 rounded text-[10px] font-bold ${
+                      className={`px-3 py-1 rounded-xl text-xs font-black ${
                         s.paymentStatus === 'PAID'
-                          ? 'bg-emerald-500/20 text-emerald-400'
-                          : 'bg-red-500/20 text-red-400'
+                          ? 'bg-emerald-100 text-emerald-800 border border-emerald-300'
+                          : 'bg-red-100 text-red-800 border border-red-300'
                       }`}
                     >
-                      {s.paymentStatus}
+                      {s.paymentStatus === 'PAID' ? 'تم الدفع' : s.paymentStatus}
                     </span>
                   </td>
-                  <td className="p-3 text-neutral-300">{s.cashier || 'Admin'}</td>
-                  <td className="p-3 text-center">
+                  <td className="p-4 text-slate-700">{s.cashier || 'Admin'}</td>
+                  <td className="p-4 text-center">
                     <button
                       onClick={() => handleReprintOrder(s.id)}
                       disabled={reprintingId === s.id}
-                      className="px-2.5 py-1 bg-neutral-800 hover:bg-neutral-700 text-amber-300 rounded-lg border border-neutral-700 font-bold text-xs inline-flex items-center gap-1 active:scale-95 transition"
+                      className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-black text-xs inline-flex items-center gap-1.5 active:scale-95 transition shadow cursor-pointer"
                       title="إعادة طباعة هذه الفاتورة"
                     >
-                      <Printer className="w-3.5 h-3.5" />
+                      <Printer className="w-4 h-4" />
                       <span>{reprintingId === s.id ? 'جاري التحميل...' : 'طباعة'}</span>
                     </button>
                   </td>

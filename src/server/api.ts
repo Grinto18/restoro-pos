@@ -652,8 +652,36 @@ apiRouter.get('/products/:id/price-history', requireAuth, async (req, res) => {
 // ==========================================
 apiRouter.get('/tables', async (_req, res) => {
   try {
-    const tablesList = await db.select().from(restaurantTables).orderBy(asc(restaurantTables.tableNumber));
-    res.json(tablesList);
+    const tablesList = await db
+      .select({
+        table: restaurantTables,
+        order: orders,
+      })
+      .from(restaurantTables)
+      .leftJoin(orders, eq(restaurantTables.currentOrderId, orders.id));
+
+    const formatted = tablesList.map(({ table, order }) => ({
+      ...table,
+      activeOrder: order
+        ? {
+            id: order.id,
+            orderNumber: order.orderNumber,
+            total: Number(order.total),
+            status: order.status,
+            paymentStatus: order.paymentStatus,
+            createdAt: order.createdAt,
+          }
+        : null,
+    }));
+
+    // Natural numeric sort: 1, 2, 3 ... 30
+    formatted.sort((a, b) => {
+      const numA = parseInt(a.tableNumber.replace(/\D/g, '') || String(a.id), 10);
+      const numB = parseInt(b.tableNumber.replace(/\D/g, '') || String(b.id), 10);
+      return numA - numB;
+    });
+
+    res.json(formatted);
   } catch (error: any) {
     res.status(500).json({ error: 'فشل تحميل الطاولات' });
   }
@@ -2210,7 +2238,8 @@ apiRouter.get('/printer/status', async (_req, res) => {
 // Direct Spool Print Job to Windows Printer
 apiRouter.post('/printer/spool', async (req, res) => {
   try {
-    const { printerName = 'CAFETERIA', rawBase64, textContent, orderNumber } = req.body;
+    const { printerName = 'CAFETERIA', rawBase64, textContent, orderNumber, copies = 1 } = req.body;
+    const numCopies = Math.max(1, Math.min(5, Number(copies) || 1));
     const isWindows = process.platform === 'win32';
 
     const osModule = await import('os');
@@ -2238,39 +2267,56 @@ apiRouter.post('/printer/spool', async (req, res) => {
       const escapedPrinter = printerName.replace(/["\\]/g, '');
       const cmd = `copy /b "${tempFilePath}" "\\\\localhost\\${escapedPrinter}"`;
       
-      cpModule.exec(cmd, (err, stdout, stderr) => {
-        // Clean up temp file after short delay
-        setTimeout(() => {
-          try {
-            if (fsModule.existsSync(tempFilePath)) fsModule.unlinkSync(tempFilePath);
-          } catch {}
-        }, 3000);
+      // Execute according to requested copies count (default 1)
+      let completedCopies = 0;
+      let lastErr: any = null;
+      let lastStdout = '';
 
-        if (err) {
-          console.warn('Windows Spool copy warning:', err.message);
-          return res.json({
-            success: true,
-            mode: 'fallback_ready',
-            message: `تم توليد تذكرة الطباعة ${orderNumber || ''} بنجاح. أمر الإرسال جاهز: ${cmd}`,
-            cmd,
+      for (let c = 0; c < numCopies; c++) {
+        await new Promise<void>((resolve) => {
+          cpModule.exec(cmd, (err, stdout) => {
+            if (err) lastErr = err;
+            if (stdout) lastStdout = stdout;
+            completedCopies++;
+            resolve();
           });
-        }
-
-        res.json({
-          success: true,
-          mode: 'spooled_to_windows',
-          message: `تم إرسال أمر الطباعة بنجاح إلى طابعة Windows (${printerName})`,
-          stdout,
         });
+      }
+
+      // Clean up temp file after short delay
+      setTimeout(() => {
+        try {
+          if (fsModule.existsSync(tempFilePath)) fsModule.unlinkSync(tempFilePath);
+        } catch {}
+      }, 3000);
+
+      if (lastErr) {
+        console.warn('Windows Spool copy warning:', lastErr.message);
+        return res.json({
+          success: true,
+          mode: 'fallback_ready',
+          message: `تم توليد تذكرة الطباعة ${orderNumber || ''} بنجاح. أمر الإرسال جاهز: ${cmd}`,
+          cmd,
+          copies: numCopies,
+        });
+      }
+
+      res.json({
+        success: true,
+        mode: 'spooled_to_windows',
+        message: `تم إرسال أمر الطباعة بنجاح إلى طابعة Windows (${printerName}) [${numCopies} نسخة]`,
+        stdout: lastStdout,
+        copies: numCopies,
       });
     } else {
       // Linux / Container host: Provide valid spool response + downloadable ready state
       res.json({
         success: true,
         mode: 'container_ready',
-        message: `تم إعداد أمر طباعة الفاتورة (${orderNumber || ''}) بنجاح لطابعة ${printerName}`,
+        message: `تم إعداد أمر طباعة الفاتورة (${orderNumber || ''}) بنجاح لطابعة ${printerName} [${numCopies} نسخة]`,
         filePath: tempFilePath,
         fileSize: fileBuffer.length,
+        copies: numCopies,
       });
     }
   } catch (error: any) {

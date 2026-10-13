@@ -58,29 +58,29 @@ export const DeliveryManager: React.FC = () => {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'DELIVERED':
-        return 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30';
+        return 'bg-emerald-100 text-emerald-800 border-emerald-300';
       case 'OUT_FOR_DELIVERY':
-        return 'bg-purple-500/20 text-purple-400 border-purple-500/30';
+        return 'bg-blue-100 text-blue-800 border-blue-300';
       case 'PREPARING':
-        return 'bg-amber-500/20 text-amber-400 border-amber-500/30';
+        return 'bg-slate-200 text-slate-800 border-slate-300';
       case 'CANCELLED':
-        return 'bg-red-500/20 text-red-400 border-red-500/30';
+        return 'bg-red-100 text-red-800 border-red-300';
       default:
-        return 'bg-sky-500/20 text-sky-400 border-sky-500/30';
+        return 'bg-blue-50 text-blue-700 border-blue-200';
     }
   };
 
   return (
-    <div className="flex-1 flex flex-col h-[calc(100vh-84px)] overflow-hidden bg-neutral-950 p-4 select-none">
+    <div className="flex-1 flex flex-col h-[calc(100vh-84px)] overflow-hidden bg-slate-50 p-5 select-none text-slate-900">
       {/* Top Header */}
-      <div className="flex items-center justify-between gap-3 bg-neutral-900 p-3 rounded-2xl border border-neutral-800 shrink-0">
-        <div className="flex items-center gap-2">
-          <div className="font-bold text-sm text-purple-400 flex items-center gap-1.5 pl-3 border-l border-neutral-800">
-            <Truck className="w-5 h-5 text-purple-500" />
+      <div className="flex items-center justify-between gap-4 bg-white p-4 rounded-3xl border-2 border-slate-200 shadow-sm shrink-0">
+        <div className="flex items-center gap-3">
+          <div className="font-black text-xl text-black flex items-center gap-2 pl-3 border-l-2 border-slate-200">
+            <Truck className="w-6 h-6 text-blue-600" />
             <span>إدارة ومتابعة طلبات التوصيل (Livraison)</span>
           </div>
 
-          <div className="flex items-center gap-1 overflow-x-auto no-scrollbar">
+          <div className="flex items-center gap-2 overflow-x-auto no-scrollbar">
             {[
               { id: 'ALL', label: 'الكل' },
               { id: 'NEW', label: 'جديدة' },
@@ -91,10 +91,10 @@ export const DeliveryManager: React.FC = () => {
               <button
                 key={f.id}
                 onClick={() => setActiveFilter(f.id)}
-                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition active:scale-95 ${
+                className={`px-4 py-2.5 rounded-xl text-sm font-black transition active:scale-95 cursor-pointer ${
                   activeFilter === f.id
-                    ? 'bg-purple-600 text-white shadow'
-                    : 'bg-neutral-800 hover:bg-neutral-700 text-neutral-300'
+                    ? 'bg-blue-600 text-white shadow-md'
+                    : 'bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-300'
                 }`}
               >
                 {f.label}
@@ -105,64 +105,70 @@ export const DeliveryManager: React.FC = () => {
 
         <button
           onClick={loadDeliveries}
-          className="p-2 rounded-xl bg-neutral-800 hover:bg-neutral-700 text-neutral-300"
+          className="p-2.5 rounded-2xl bg-slate-100 hover:bg-slate-200 border border-slate-300 text-slate-700 cursor-pointer"
           title="تحديث"
         >
-          <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
+          <RefreshCw className={`w-5 h-5 ${isLoading ? 'animate-spin text-blue-600' : ''}`} />
         </button>
       </div>
 
       {/* Deliveries Grid */}
-      <div className="flex-1 overflow-y-auto no-scrollbar pt-3">
+      <div className="flex-1 overflow-y-auto no-scrollbar pt-4">
         {filtered.length === 0 ? (
-          <div className="h-64 flex flex-col items-center justify-center text-neutral-500">
-            <Truck className="w-12 h-12 stroke-[1.2] mb-2" />
-            <p className="text-sm font-bold">لا توجد طلبات توصيل مطابقة</p>
+          <div className="h-64 flex flex-col items-center justify-center text-slate-400">
+            <Truck className="w-16 h-16 stroke-[1.5] mb-2 text-slate-300" />
+            <p className="text-lg font-black text-slate-600">لا توجد طلبات توصيل مطابقة</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 pb-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 pb-6">
             {filtered.map((d) => (
               <div
                 key={d.id}
-                className="bg-neutral-900 border border-neutral-800 rounded-2xl p-4 flex flex-col justify-between space-y-3 shadow-lg"
+                className="bg-white border-2 border-slate-200 rounded-3xl p-5 flex flex-col justify-between space-y-4 shadow-sm hover:shadow-md transition"
               >
                 <div className="flex items-start justify-between">
                   <div>
-                    <span className="font-mono text-sm font-bold text-amber-400 block">
+                    <span className="font-black text-xl text-black block">
                       {d.orderNumber}
                     </span>
-                    <span className="text-xs font-bold text-neutral-200">
-                      {d.customerName || 'زبون'}
+                    <span className="text-sm font-black text-blue-700">
+                      {d.customerName || 'زبون عام'}
                     </span>
                   </div>
 
-                  <span className={`px-2 py-0.5 rounded text-[10px] font-bold border ${getStatusColor(d.status)}`}>
-                    {d.status}
+                  <span className={`px-3 py-1 rounded-xl text-xs font-black border ${getStatusColor(d.status)}`}>
+                    {d.status === 'DELIVERED'
+                      ? 'تم التسليم'
+                      : d.status === 'OUT_FOR_DELIVERY'
+                      ? 'مع السائق'
+                      : d.status === 'PREPARING'
+                      ? 'قيد التحضير'
+                      : d.status}
                   </span>
                 </div>
 
-                <div className="space-y-1 text-xs text-neutral-300">
-                  <div className="flex items-center gap-1.5 text-cyan-400 font-mono">
-                    <Phone className="w-3.5 h-3.5" />
+                <div className="space-y-1.5 text-sm font-bold text-slate-700">
+                  <div className="flex items-center gap-2 text-blue-700 font-mono">
+                    <Phone className="w-4 h-4" />
                     <span>{d.customerPhone || '—'}</span>
                   </div>
 
-                  <div className="flex items-start gap-1.5 text-neutral-300">
-                    <MapPin className="w-3.5 h-3.5 text-amber-500 shrink-0 mt-0.5" />
+                  <div className="flex items-start gap-2 text-slate-800">
+                    <MapPin className="w-4 h-4 text-blue-600 shrink-0 mt-0.5" />
                     <span className="line-clamp-2">{d.deliveryAddress}</span>
                   </div>
 
                   {d.driverName && (
-                    <div className="flex items-center gap-1.5 text-neutral-400 pt-1">
-                      <User className="w-3.5 h-3.5" />
+                    <div className="flex items-center gap-2 text-slate-600 pt-1">
+                      <User className="w-4 h-4 text-slate-400" />
                       <span>السائق: {d.driverName} ({d.driverPhone || '—'})</span>
                     </div>
                   )}
                 </div>
 
-                <div className="flex items-center justify-between pt-2 border-t border-neutral-800">
-                  <div className="font-mono font-bold text-amber-400 text-sm">
-                    {Number(d.orderTotal || 0).toLocaleString()} DA
+                <div className="flex items-center justify-between pt-3 border-t border-slate-200">
+                  <div className="font-black text-blue-700 text-2xl">
+                    {Number(d.orderTotal || 0).toLocaleString()} <span className="text-sm text-slate-600">DA</span>
                   </div>
 
                   <button
@@ -172,7 +178,7 @@ export const DeliveryManager: React.FC = () => {
                       setDriverPhoneInput(d.driverPhone || '');
                       setSelectedStatus(d.status);
                     }}
-                    className="px-2.5 py-1 bg-purple-900/60 hover:bg-purple-800 text-purple-200 border border-purple-700/60 rounded-lg text-xs font-bold transition active:scale-95"
+                    className="px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-black transition active:scale-95 shadow cursor-pointer"
                   >
                     تحديث الحالة / السائق
                   </button>
@@ -185,24 +191,24 @@ export const DeliveryManager: React.FC = () => {
 
       {/* Edit Status Modal */}
       {editingDelivery && (
-        <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-sm flex items-center justify-center p-3">
-          <div className="bg-neutral-900 border border-neutral-700 rounded-3xl max-w-sm w-full p-4 shadow-2xl space-y-3">
-            <div className="flex items-center justify-between border-b border-neutral-800 pb-2">
-              <h3 className="font-bold text-sm text-purple-400">
+        <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white border-2 border-slate-200 rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-4 text-slate-900">
+            <div className="flex items-center justify-between border-b-2 border-slate-200 pb-3">
+              <h3 className="font-black text-xl text-black">
                 تحديث التوصيل: {editingDelivery.orderNumber}
               </h3>
-              <button onClick={() => setEditingDelivery(null)} className="p-1 rounded bg-neutral-800 text-neutral-400">
-                <X className="w-4 h-4" />
+              <button onClick={() => setEditingDelivery(null)} className="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600">
+                <X className="w-6 h-6" />
               </button>
             </div>
 
-            <div className="space-y-2 text-xs">
+            <div className="space-y-3 text-sm font-bold">
               <div>
-                <label className="block text-neutral-400 mb-1">حالة التوصيل:</label>
+                <label className="block text-slate-700 mb-1">حالة التوصيل:</label>
                 <select
                   value={selectedStatus}
                   onChange={(e) => setSelectedStatus(e.target.value)}
-                  className="w-full bg-neutral-950 border border-neutral-700 rounded-lg p-2 text-neutral-100 font-bold"
+                  className="w-full bg-slate-50 border-2 border-slate-200 rounded-xl p-3 text-slate-900 font-black text-base focus:outline-none focus:border-blue-600"
                 >
                   <option value="NEW">جديد (New)</option>
                   <option value="PREPARING">قيد التحضير في المطبخ</option>
@@ -213,31 +219,31 @@ export const DeliveryManager: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-neutral-400 mb-1">اسم السائق (Livreur):</label>
+                <label className="block text-slate-700 mb-1">اسم السائق (Livreur):</label>
                 <input
                   type="text"
                   value={driverNameInput}
                   onChange={(e) => setDriverNameInput(e.target.value)}
                   placeholder="مثال: يوسف"
-                  className="w-full bg-neutral-950 border border-neutral-700 rounded-lg p-2 text-neutral-100"
+                  className="w-full bg-slate-50 border-2 border-slate-200 rounded-xl p-3 text-slate-900 font-bold text-base focus:outline-none focus:border-blue-600"
                 />
               </div>
 
               <div>
-                <label className="block text-neutral-400 mb-1">رقم هاتف السائق:</label>
+                <label className="block text-slate-700 mb-1">رقم هاتف السائق:</label>
                 <input
                   type="tel"
                   value={driverPhoneInput}
                   onChange={(e) => setDriverPhoneInput(e.target.value)}
                   placeholder="0661223344"
-                  className="w-full bg-neutral-950 border border-neutral-700 rounded-lg p-2 text-neutral-100 font-mono"
+                  className="w-full bg-slate-50 border-2 border-slate-200 rounded-xl p-3 text-slate-900 font-mono text-base focus:outline-none focus:border-blue-600"
                 />
               </div>
             </div>
 
             <button
               onClick={handleUpdateStatus}
-              className="w-full py-2 bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs rounded-xl active:scale-95 transition"
+              className="w-full py-4 bg-blue-600 hover:bg-blue-700 text-white font-black text-xl rounded-2xl active:scale-95 transition shadow-xl cursor-pointer"
             >
               حفظ وتحديث
             </button>

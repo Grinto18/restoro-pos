@@ -62,16 +62,16 @@ export const KitchenDisplay: React.FC = () => {
   ];
 
   return (
-    <div className="flex-1 flex flex-col h-[calc(100vh-84px)] overflow-hidden bg-neutral-950 p-4 select-none">
+    <div className="flex-1 flex flex-col h-[calc(100vh-84px)] overflow-hidden bg-slate-50 p-5 select-none text-slate-900">
       {/* Top Controls: Stations & Refresh */}
-      <div className="flex items-center justify-between gap-3 bg-neutral-900 p-3 rounded-2xl border border-neutral-800 shrink-0">
-        <div className="flex items-center gap-2">
-          <div className="font-bold text-sm text-amber-400 flex items-center gap-1.5 pl-3 border-l border-neutral-800">
-            <ChefHat className="w-5 h-5 text-orange-500" />
-            <span>نظام شاشة المطبخ (KDS)</span>
+      <div className="flex items-center justify-between gap-4 bg-white p-4 rounded-3xl border-2 border-slate-200 shadow-sm shrink-0">
+        <div className="flex items-center gap-3">
+          <div className="font-black text-xl text-black flex items-center gap-2 pl-3 border-l-2 border-slate-200">
+            <ChefHat className="w-6 h-6 text-blue-600" />
+            <span>شاشة المطبخ (KDS)</span>
           </div>
 
-          <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar">
+          <div className="flex items-center gap-2 overflow-x-auto no-scrollbar">
             {stations.map((s) => {
               const Icon = s.icon;
               const isSelected = activeStation === s.id;
@@ -79,13 +79,13 @@ export const KitchenDisplay: React.FC = () => {
                 <button
                   key={s.id}
                   onClick={() => setActiveStation(s.id)}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 transition active:scale-95 ${
+                  className={`px-4 py-2.5 rounded-xl text-sm font-black flex items-center gap-2 transition active:scale-95 cursor-pointer ${
                     isSelected
-                      ? 'bg-orange-500 text-black shadow'
-                      : 'bg-neutral-800 hover:bg-neutral-700 text-neutral-300'
+                      ? 'bg-blue-600 text-white shadow-md'
+                      : 'bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-300'
                   }`}
                 >
-                  <Icon className="w-3.5 h-3.5" />
+                  <Icon className="w-4 h-4" />
                   <span>{s.label}</span>
                 </button>
               );
@@ -93,22 +93,23 @@ export const KitchenDisplay: React.FC = () => {
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
-          <label className="flex items-center gap-1.5 text-xs text-neutral-400 font-medium cursor-pointer">
+        <div className="flex items-center gap-3">
+          <label className="flex items-center gap-2 text-sm text-slate-700 font-bold cursor-pointer">
             <input
               type="checkbox"
               checked={autoRefresh}
               onChange={(e) => setAutoRefresh(e.target.checked)}
-              className="rounded bg-neutral-800 border-neutral-700 text-orange-500 focus:ring-orange-500"
+              className="rounded bg-slate-100 border-slate-300 text-blue-600 focus:ring-blue-500 w-4 h-4 cursor-pointer"
             />
             <span>تحديث تلقائي</span>
           </label>
 
           <button
             onClick={loadTickets}
-            className="p-2 rounded-xl bg-neutral-800 hover:bg-neutral-700 text-neutral-300 transition active:scale-95"
+            className="p-2.5 rounded-2xl bg-slate-100 hover:bg-slate-200 border border-slate-300 text-slate-700 transition active:scale-95 cursor-pointer"
+            title="تحديث"
           >
-            <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
+            <RefreshCw className={`w-5 h-5 ${isLoading ? 'animate-spin text-blue-600' : ''}`} />
           </button>
         </div>
       </div>
@@ -116,10 +117,10 @@ export const KitchenDisplay: React.FC = () => {
       {/* Tickets Board */}
       <div className="flex-1 overflow-x-auto overflow-y-hidden pt-4 no-scrollbar">
         {tickets.length === 0 ? (
-          <div className="h-full flex flex-col items-center justify-center text-neutral-500">
-            <ChefHat className="w-16 h-16 stroke-[1.2] text-neutral-700 mb-2" />
-            <h3 className="text-base font-bold text-neutral-400">لا توجد طلبات قيد التحضير حالياً</h3>
-            <p className="text-xs text-neutral-600">ستظهر التذاكر الجديدة تلقائياً عند طلبها من الكاشير</p>
+          <div className="h-full flex flex-col items-center justify-center text-slate-400">
+            <ChefHat className="w-16 h-16 stroke-[1.5] text-slate-300 mb-3" />
+            <h3 className="text-xl font-black text-slate-700">لا توجد طلبات قيد التحضير حالياً</h3>
+            <p className="text-sm font-semibold text-slate-500 mt-1">ستظهر التذاكر الجديدة تلقائياً عند طلبها من الكاشير</p>
           </div>
         ) : (
           <div className="flex gap-4 h-full pb-2">
@@ -131,29 +132,29 @@ export const KitchenDisplay: React.FC = () => {
               return (
                 <div
                   key={ticket.id}
-                  className={`w-80 h-full flex flex-col rounded-2xl border shadow-xl bg-neutral-900 shrink-0 overflow-hidden ${
+                  className={`w-88 h-full flex flex-col rounded-3xl border-2 shadow-md bg-white shrink-0 overflow-hidden ${
                     isUrgent
-                      ? 'border-red-600/80'
+                      ? 'border-red-400 ring-2 ring-red-200'
                       : isWarning
-                      ? 'border-amber-500/80'
-                      : 'border-neutral-800'
+                      ? 'border-blue-400 ring-2 ring-blue-200'
+                      : 'border-slate-200'
                   }`}
                 >
                   {/* Ticket Header */}
                   <div
-                    className={`p-3 border-b flex items-center justify-between text-xs font-bold ${
+                    className={`p-4 border-b-2 flex items-center justify-between text-sm font-black ${
                       isUrgent
-                        ? 'bg-red-950/80 text-red-200 border-red-800'
+                        ? 'bg-red-50 text-red-900 border-red-200'
                         : isWarning
-                        ? 'bg-amber-950/80 text-amber-200 border-amber-800'
-                        : 'bg-neutral-950 text-neutral-200 border-neutral-800'
+                        ? 'bg-blue-50 text-blue-900 border-blue-200'
+                        : 'bg-slate-100 text-slate-900 border-slate-200'
                     }`}
                   >
                     <div>
-                      <span className="font-mono text-base font-black text-amber-400 block">
+                      <span className="text-xl font-black text-black block">
                         {ticket.orderNumber}
                       </span>
-                      <span className="text-[11px] opacity-80">
+                      <span className="text-xs font-bold text-slate-600">
                         {ticket.type === 'DINE_IN'
                           ? `طاولة ${ticket.tableNumber || '—'}`
                           : ticket.type === 'DELIVERY'
@@ -163,11 +164,11 @@ export const KitchenDisplay: React.FC = () => {
                     </div>
 
                     <div className="text-left font-mono">
-                      <div className="flex items-center gap-1 text-sm font-black">
-                        <Clock className="w-4 h-4 text-orange-400" />
+                      <div className="flex items-center gap-1.5 text-base font-black text-blue-700">
+                        <Clock className="w-4 h-4 text-blue-600" />
                         <span>{elapsed} د</span>
                       </div>
-                      <span className="text-[10px] opacity-70">
+                      <span className="text-xs text-slate-500 font-bold">
                         {new Date(ticket.createdAt).toLocaleTimeString('fr-FR', {
                           hour: '2-digit',
                           minute: '2-digit',
@@ -177,7 +178,7 @@ export const KitchenDisplay: React.FC = () => {
                   </div>
 
                   {/* Items List */}
-                  <div className="flex-1 overflow-y-auto p-3 space-y-2 no-scrollbar">
+                  <div className="flex-1 overflow-y-auto p-3.5 space-y-2.5 no-scrollbar bg-slate-50/50">
                     {ticket.items?.map((item: any) => {
                       const isReady = item.status === 'READY';
                       const isPreparing = item.status === 'PREPARING';
@@ -185,23 +186,23 @@ export const KitchenDisplay: React.FC = () => {
                       return (
                         <div
                           key={item.id}
-                          className={`p-2.5 rounded-xl border transition ${
+                          className={`p-3 rounded-2xl border-2 transition ${
                             isReady
-                              ? 'bg-emerald-950/30 border-emerald-600/50 text-emerald-200 opacity-80'
+                              ? 'bg-emerald-50 border-emerald-300 text-emerald-900 opacity-80'
                               : isPreparing
-                              ? 'bg-amber-950/30 border-amber-600/50 text-amber-100'
-                              : 'bg-neutral-950 border-neutral-800 text-neutral-100'
+                              ? 'bg-blue-50 border-blue-400 text-blue-950 shadow-sm'
+                              : 'bg-white border-slate-200 text-slate-900 shadow-sm'
                           }`}
                         >
-                          <div className="flex items-start justify-between gap-2">
-                            <div className="flex items-baseline gap-2">
-                              <span className="font-mono font-black text-base text-amber-400 bg-neutral-900 px-2 py-0.5 rounded border border-neutral-800">
+                          <div className="flex items-start justify-between gap-3">
+                            <div className="flex items-baseline gap-2.5">
+                              <span className="font-mono font-black text-lg text-blue-700 bg-blue-100 px-2.5 py-1 rounded-xl border border-blue-200">
                                 {item.quantity}×
                               </span>
                               <div>
-                                <span className="font-bold text-sm">{item.nameAr}</span>
+                                <span className="font-black text-base text-slate-900">{item.nameAr}</span>
                                 {item.nameFr && (
-                                  <span className="text-[10px] text-neutral-400 font-normal block">
+                                  <span className="text-xs text-slate-500 font-semibold block">
                                     {item.nameFr}
                                   </span>
                                 )}
@@ -218,12 +219,12 @@ export const KitchenDisplay: React.FC = () => {
                                     : 'SERVED';
                                 handleUpdateItemStatus(item.id, next);
                               }}
-                              className={`px-2 py-1 rounded text-[10px] font-bold transition active:scale-95 ${
+                              className={`px-3 py-1.5 rounded-xl text-xs font-black transition active:scale-95 cursor-pointer ${
                                 isReady
-                                  ? 'bg-emerald-500 text-black'
+                                  ? 'bg-emerald-600 text-white shadow-sm'
                                   : isPreparing
-                                  ? 'bg-amber-500 text-black animate-pulse'
-                                  : 'bg-neutral-800 hover:bg-neutral-700 text-neutral-300 border border-neutral-700'
+                                  ? 'bg-blue-600 text-white shadow-md animate-pulse'
+                                  : 'bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-300'
                               }`}
                             >
                               {isReady ? 'جاهز ✓' : isPreparing ? 'قيد التحضير...' : 'بدء التحضير'}
@@ -231,8 +232,8 @@ export const KitchenDisplay: React.FC = () => {
                           </div>
 
                           {item.notes && (
-                            <div className="mt-1.5 text-xs text-amber-300 font-bold bg-amber-500/10 px-2 py-1 rounded border border-amber-500/20">
-                              ⚠️ {item.notes}
+                            <div className="mt-2 text-xs text-blue-900 font-extrabold bg-blue-100/70 px-2.5 py-1 rounded-lg border border-blue-200">
+                              ملاحظة: {item.notes}
                             </div>
                           )}
                         </div>
@@ -242,7 +243,7 @@ export const KitchenDisplay: React.FC = () => {
 
                   {/* Notes & Actions */}
                   {ticket.notes && (
-                    <div className="px-3 py-1.5 bg-neutral-950/80 border-t border-neutral-800 text-xs text-amber-300">
+                    <div className="px-4 py-2.5 bg-slate-100 border-t-2 border-slate-200 text-xs font-bold text-slate-700">
                       ملاحظة عامة: {ticket.notes}
                     </div>
                   )}

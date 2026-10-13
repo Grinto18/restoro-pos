@@ -12,6 +12,7 @@ import {
   X,
   Calendar,
   DollarSign,
+  PackageCheck,
 } from 'lucide-react';
 
 export const PurchasesManager: React.FC = () => {
@@ -115,31 +116,37 @@ export const PurchasesManager: React.FC = () => {
   );
 
   return (
-    <div className="flex-1 flex flex-col h-[calc(100vh-84px)] overflow-hidden bg-neutral-950 p-4 select-none">
+    <div className="flex-1 flex flex-col h-[calc(100vh-84px)] overflow-hidden bg-slate-50 p-4 select-none">
       {/* Top Bar */}
-      <div className="flex items-center justify-between gap-3 bg-neutral-900 p-3 rounded-2xl border border-neutral-800 shrink-0">
-        <div className="flex items-center gap-2">
-          <div className="font-bold text-sm text-cyan-400 flex items-center gap-1.5 pl-3 border-l border-neutral-800">
-            <FileSpreadsheet className="w-5 h-5 text-cyan-500" />
+      <div className="flex flex-wrap items-center justify-between gap-4 bg-white p-4 rounded-2xl border-2 border-slate-200 shadow-sm shrink-0">
+        <div className="flex items-center gap-3">
+          <div className="font-extrabold text-xl text-slate-900 flex items-center gap-2.5 pl-4 border-l-2 border-slate-200">
+            <div className="w-10 h-10 rounded-xl bg-blue-50 border border-blue-200 flex items-center justify-center text-blue-600">
+              <FileSpreadsheet className="w-6 h-6" />
+            </div>
             <span>المشتريات والموردين (Achats & Fournisseurs)</span>
           </div>
 
-          <div className="flex items-center gap-1.5 bg-neutral-950 p-1 rounded-xl border border-neutral-800 text-xs">
+          <div className="flex items-center gap-2 bg-slate-100 p-1.5 rounded-xl border border-slate-200">
             <button
               onClick={() => setActiveSubTab('PURCHASES')}
-              className={`px-3 py-1.5 rounded-lg font-bold transition ${
-                activeSubTab === 'PURCHASES' ? 'bg-cyan-500 text-black shadow' : 'text-neutral-400'
+              className={`px-5 py-2 rounded-lg font-bold text-base transition-all ${
+                activeSubTab === 'PURCHASES'
+                  ? 'bg-blue-600 text-white shadow-md'
+                  : 'text-slate-600 hover:text-slate-900'
               }`}
             >
-              فواتير الشراء (F1)
+              فواتير الشراء
             </button>
             <button
               onClick={() => setActiveSubTab('SUPPLIERS')}
-              className={`px-3 py-1.5 rounded-lg font-bold transition ${
-                activeSubTab === 'SUPPLIERS' ? 'bg-cyan-500 text-black shadow' : 'text-neutral-400'
+              className={`px-5 py-2 rounded-lg font-bold text-base transition-all ${
+                activeSubTab === 'SUPPLIERS'
+                  ? 'bg-blue-600 text-white shadow-md'
+                  : 'text-slate-600 hover:text-slate-900'
               }`}
             >
-              الموردين (F4)
+              دليل الموردين
             </button>
           </div>
         </div>
@@ -151,77 +158,93 @@ export const PurchasesManager: React.FC = () => {
               setPurchaseItemsList([]);
               setShowPurchaseModal(true);
             }}
-            className="bg-cyan-500 hover:bg-cyan-400 text-black px-3.5 py-1.5 rounded-xl text-xs font-bold shadow transition flex items-center gap-1.5"
+            className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl text-base font-bold shadow-md hover:shadow-lg transition flex items-center gap-2 active:scale-95"
           >
-            <Plus className="w-4 h-4" />
+            <Plus className="w-5 h-5" />
             <span>تسجيل فاتورة شراء (Saisie Achat)</span>
           </button>
         ) : (
           <button
             onClick={() => setShowSupplierModal(true)}
-            className="bg-cyan-500 hover:bg-cyan-400 text-black px-3.5 py-1.5 rounded-xl text-xs font-bold shadow transition flex items-center gap-1.5"
+            className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl text-base font-bold shadow-md hover:shadow-lg transition flex items-center gap-2 active:scale-95"
           >
-            <Plus className="w-4 h-4" />
+            <Plus className="w-5 h-5" />
             <span>مورد جديد</span>
           </button>
         )}
       </div>
 
       {/* Main Table */}
-      <div className="flex-1 bg-neutral-900 rounded-2xl border border-neutral-800 overflow-hidden flex flex-col mt-3">
+      <div className="flex-1 bg-white rounded-2xl border-2 border-slate-200 shadow-sm overflow-hidden flex flex-col mt-4">
         <div className="overflow-x-auto flex-1 no-scrollbar">
           {activeSubTab === 'PURCHASES' ? (
-            <table className="w-full text-right text-xs">
-              <thead className="bg-neutral-950 text-neutral-400 border-b border-neutral-800 font-bold">
+            <table className="w-full text-right text-base">
+              <thead className="bg-slate-900 text-white border-b-2 border-slate-800 font-bold text-lg">
                 <tr>
-                  <th className="p-3">رقم الفاتورة</th>
-                  <th className="p-3">المورد</th>
-                  <th className="p-3">المبلغ الإجمالي (DA)</th>
-                  <th className="p-3">التاريخ</th>
-                  <th className="p-3">المستلم</th>
-                  <th className="p-3">البنود المشتراة</th>
+                  <th className="p-4">رقم الفاتورة</th>
+                  <th className="p-4">المورد</th>
+                  <th className="p-4">المبلغ الإجمالي (DA)</th>
+                  <th className="p-4">التاريخ</th>
+                  <th className="p-4">المستلم</th>
+                  <th className="p-4">البنود المشتراة</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-neutral-800/60 font-medium">
-                {purchases.map((p) => (
-                  <tr key={p.id} className="hover:bg-neutral-800/50 transition">
-                    <td className="p-3 font-mono font-bold text-cyan-400">{p.purchaseNumber}</td>
-                    <td className="p-3 font-bold text-neutral-100">{p.supplierName}</td>
-                    <td className="p-3 font-mono font-bold text-amber-400 text-sm">
-                      {Number(p.totalAmount).toLocaleString()} DA
-                    </td>
-                    <td className="p-3 font-mono text-neutral-400">{p.invoiceDate}</td>
-                    <td className="p-3 text-neutral-300">{p.receivedByName || '—'}</td>
-                    <td className="p-3 text-[11px] text-neutral-300">
-                      {p.items?.map((it: any) => `${it.ingredientName}: ${it.quantity}`).join(' • ')}
+              <tbody className="divide-y divide-slate-100 font-medium">
+                {purchases.length === 0 ? (
+                  <tr>
+                    <td colSpan={6} className="p-10 text-center text-slate-400 font-bold text-lg">
+                      لا توجد فواتير مشتريات مسجلة
                     </td>
                   </tr>
-                ))}
+                ) : (
+                  purchases.map((p) => (
+                    <tr key={p.id} className="hover:bg-blue-50/50 transition">
+                      <td className="p-4 font-mono font-bold text-blue-600">{p.purchaseNumber}</td>
+                      <td className="p-4 font-bold text-slate-900">{p.supplierName}</td>
+                      <td className="p-4 font-mono font-black text-blue-700 text-lg">
+                        {Number(p.totalAmount).toLocaleString()} DA
+                      </td>
+                      <td className="p-4 font-mono text-slate-600 font-bold">{p.invoiceDate}</td>
+                      <td className="p-4 text-slate-700">{p.receivedByName || '—'}</td>
+                      <td className="p-4 text-sm text-slate-600">
+                        {p.items?.map((it: any) => `${it.ingredientName}: ${it.quantity}`).join(' • ')}
+                      </td>
+                    </tr>
+                  ))
+                )}
               </tbody>
             </table>
           ) : (
-            <table className="w-full text-right text-xs">
-              <thead className="bg-neutral-950 text-neutral-400 border-b border-neutral-800 font-bold">
+            <table className="w-full text-right text-base">
+              <thead className="bg-slate-900 text-white border-b-2 border-slate-800 font-bold text-lg">
                 <tr>
-                  <th className="p-3">المورد</th>
-                  <th className="p-3">الشخص المسؤول</th>
-                  <th className="p-3">الهاتف</th>
-                  <th className="p-3">العنوان</th>
-                  <th className="p-3">الرصيد (DA)</th>
+                  <th className="p-4">المورد</th>
+                  <th className="p-4">الشخص المسؤول</th>
+                  <th className="p-4">الهاتف</th>
+                  <th className="p-4">العنوان</th>
+                  <th className="p-4">الرصيد (DA)</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-neutral-800/60 font-medium">
-                {suppliers.map((s) => (
-                  <tr key={s.id} className="hover:bg-neutral-800/50 transition">
-                    <td className="p-3 font-bold text-neutral-100">{s.name}</td>
-                    <td className="p-3 text-neutral-300">{s.contactPerson || '—'}</td>
-                    <td className="p-3 font-mono text-cyan-400">{s.phone || '—'}</td>
-                    <td className="p-3 text-neutral-400">{s.address || '—'}</td>
-                    <td className="p-3 font-mono font-bold text-neutral-200">
-                      {Number(s.balance).toLocaleString()} DA
+              <tbody className="divide-y divide-slate-100 font-medium">
+                {suppliers.length === 0 ? (
+                  <tr>
+                    <td colSpan={5} className="p-10 text-center text-slate-400 font-bold text-lg">
+                      لا يوجد موردين مسجلين
                     </td>
                   </tr>
-                ))}
+                ) : (
+                  suppliers.map((s) => (
+                    <tr key={s.id} className="hover:bg-blue-50/50 transition">
+                      <td className="p-4 font-bold text-slate-900">{s.name}</td>
+                      <td className="p-4 text-slate-700">{s.contactPerson || '—'}</td>
+                      <td className="p-4 font-mono text-blue-600 font-bold">{s.phone || '—'}</td>
+                      <td className="p-4 text-slate-600">{s.address || '—'}</td>
+                      <td className="p-4 font-mono font-black text-slate-900 text-lg">
+                        {Number(s.balance).toLocaleString()} DA
+                      </td>
+                    </tr>
+                  ))
+                )}
               </tbody>
             </table>
           )}
@@ -230,22 +253,28 @@ export const PurchasesManager: React.FC = () => {
 
       {/* Purchase Modal */}
       {showPurchaseModal && (
-        <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-sm flex items-center justify-center p-3">
-          <div className="bg-neutral-900 border border-neutral-700 rounded-3xl max-w-lg w-full p-5 shadow-2xl space-y-4">
-            <div className="flex items-center justify-between border-b border-neutral-800 pb-2">
-              <h3 className="font-bold text-base text-cyan-400">فاتورة مشتريات جديدة (تزيد المخزون)</h3>
-              <button onClick={() => setShowPurchaseModal(false)} className="p-1 rounded bg-neutral-800 text-neutral-400">
-                <X className="w-5 h-5" />
+        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white border-2 border-slate-200 rounded-3xl max-w-xl w-full p-6 shadow-2xl space-y-5">
+            <div className="flex items-center justify-between border-b-2 border-slate-100 pb-3">
+              <h3 className="font-extrabold text-2xl text-slate-900 flex items-center gap-2">
+                <PackageCheck className="w-7 h-7 text-blue-600" />
+                <span>فاتورة مشتريات جديدة (تزيد المخزون)</span>
+              </h3>
+              <button
+                onClick={() => setShowPurchaseModal(false)}
+                className="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 transition"
+              >
+                <X className="w-6 h-6" />
               </button>
             </div>
 
-            <div className="grid grid-cols-2 gap-3 text-xs">
+            <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-neutral-400 mb-1">المورد *</label>
+                <label className="block text-slate-700 font-bold text-base mb-1.5">المورد *</label>
                 <select
                   value={selectedSupplierId}
                   onChange={(e) => setSelectedSupplierId(e.target.value)}
-                  className="w-full bg-neutral-950 border border-neutral-700 rounded-lg p-2 text-neutral-100 font-bold"
+                  className="w-full bg-slate-50 border-2 border-slate-200 rounded-xl p-3 text-slate-900 font-bold text-base focus:outline-none focus:border-blue-600 focus:bg-white"
                 >
                   {suppliers.map((s) => (
                     <option key={s.id} value={s.id}>
@@ -256,92 +285,104 @@ export const PurchasesManager: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-neutral-400 mb-1">تاريخ الفاتورة</label>
+                <label className="block text-slate-700 font-bold text-base mb-1.5">تاريخ الفاتورة</label>
                 <input
                   type="date"
                   value={invoiceDate}
                   onChange={(e) => setInvoiceDate(e.target.value)}
-                  className="w-full bg-neutral-950 border border-neutral-700 rounded-lg p-2 text-neutral-100 font-mono"
+                  className="w-full bg-slate-50 border-2 border-slate-200 rounded-xl p-3 text-slate-900 font-mono text-base focus:outline-none focus:border-blue-600 focus:bg-white"
                 />
               </div>
             </div>
 
             {/* Items */}
-            <div className="space-y-2 text-xs">
+            <div className="space-y-3">
               <div className="flex items-center justify-between">
-                <span className="font-bold text-neutral-300">المواد المشتراة:</span>
+                <span className="font-extrabold text-slate-900 text-lg">المواد المشتراة:</span>
                 <button
                   onClick={handleAddPurchaseItem}
-                  className="bg-neutral-800 hover:bg-neutral-700 text-cyan-300 px-2 py-1 rounded text-[11px] font-bold"
+                  className="bg-blue-50 border border-blue-200 hover:bg-blue-100 text-blue-700 px-3.5 py-1.5 rounded-xl text-sm font-black transition flex items-center gap-1.5"
                 >
-                  + إضافة مادة
+                  <Plus className="w-4 h-4" />
+                  <span>إضافة مادة</span>
                 </button>
               </div>
 
-              <div className="space-y-2 max-h-48 overflow-y-auto no-scrollbar">
-                {purchaseItemsList.map((item, idx) => (
-                  <div key={idx} className="flex items-center gap-2 bg-neutral-950 p-2 rounded-xl border border-neutral-800">
-                    <select
-                      value={item.ingredientId}
-                      onChange={(e) => {
-                        const updated = [...purchaseItemsList];
-                        updated[idx].ingredientId = Number(e.target.value);
-                        setPurchaseItemsList(updated);
-                      }}
-                      className="flex-1 bg-neutral-900 border border-neutral-700 rounded p-1.5 text-neutral-100 text-xs"
-                    >
-                      {ingredients.map((ing) => (
-                        <option key={ing.id} value={ing.id}>
-                          {ing.nameAr} ({ing.unit})
-                        </option>
-                      ))}
-                    </select>
-
-                    <input
-                      type="number"
-                      placeholder="الكمية"
-                      value={item.quantity}
-                      onChange={(e) => {
-                        const updated = [...purchaseItemsList];
-                        updated[idx].quantity = e.target.value;
-                        setPurchaseItemsList(updated);
-                      }}
-                      className="w-20 bg-neutral-900 border border-neutral-700 rounded p-1.5 text-center font-mono text-xs text-neutral-100"
-                    />
-
-                    <input
-                      type="number"
-                      placeholder="السعر الفردي"
-                      value={item.unitCost}
-                      onChange={(e) => {
-                        const updated = [...purchaseItemsList];
-                        updated[idx].unitCost = e.target.value;
-                        setPurchaseItemsList(updated);
-                      }}
-                      className="w-24 bg-neutral-900 border border-neutral-700 rounded p-1.5 text-center font-mono text-xs text-amber-300 font-bold"
-                    />
-
-                    <button
-                      onClick={() => {
-                        setPurchaseItemsList(purchaseItemsList.filter((_, i) => i !== idx));
-                      }}
-                      className="p-1 text-red-400 hover:bg-red-950 rounded"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
+              <div className="space-y-2.5 max-h-56 overflow-y-auto no-scrollbar">
+                {purchaseItemsList.length === 0 ? (
+                  <div className="p-4 text-center text-slate-400 font-bold bg-slate-50 rounded-xl border-2 border-dashed border-slate-200">
+                    اضغط "إضافة مادة" لإدراج المواد المشتراة
                   </div>
-                ))}
+                ) : (
+                  purchaseItemsList.map((item, idx) => (
+                    <div
+                      key={idx}
+                      className="flex items-center gap-2 bg-slate-50 p-2.5 rounded-xl border-2 border-slate-200"
+                    >
+                      <select
+                        value={item.ingredientId}
+                        onChange={(e) => {
+                          const updated = [...purchaseItemsList];
+                          updated[idx].ingredientId = Number(e.target.value);
+                          setPurchaseItemsList(updated);
+                        }}
+                        className="flex-1 bg-white border-2 border-slate-200 rounded-lg p-2 text-slate-900 font-bold text-sm focus:border-blue-600"
+                      >
+                        {ingredients.map((ing) => (
+                          <option key={ing.id} value={ing.id}>
+                            {ing.nameAr} ({ing.unit})
+                          </option>
+                        ))}
+                      </select>
+
+                      <input
+                        type="number"
+                        placeholder="الكمية"
+                        value={item.quantity}
+                        onChange={(e) => {
+                          const updated = [...purchaseItemsList];
+                          updated[idx].quantity = e.target.value;
+                          setPurchaseItemsList(updated);
+                        }}
+                        className="w-24 bg-white border-2 border-slate-200 rounded-lg p-2 text-center font-mono font-bold text-sm text-slate-900 focus:border-blue-600"
+                      />
+
+                      <input
+                        type="number"
+                        placeholder="السعر الفردي"
+                        value={item.unitCost}
+                        onChange={(e) => {
+                          const updated = [...purchaseItemsList];
+                          updated[idx].unitCost = e.target.value;
+                          setPurchaseItemsList(updated);
+                        }}
+                        className="w-28 bg-white border-2 border-slate-200 rounded-lg p-2 text-center font-mono font-extrabold text-sm text-blue-700 focus:border-blue-600"
+                      />
+
+                      <button
+                        onClick={() => {
+                          setPurchaseItemsList(purchaseItemsList.filter((_, i) => i !== idx));
+                        }}
+                        className="p-2 text-rose-500 hover:bg-rose-50 rounded-lg transition"
+                      >
+                        <Trash2 className="w-5 h-5" />
+                      </button>
+                    </div>
+                  ))
+                )}
               </div>
             </div>
 
-            <div className="p-3 bg-neutral-950 rounded-xl border border-neutral-800 flex items-center justify-between font-mono">
-              <span className="text-xs text-neutral-400 font-sans">الإجمالي:</span>
-              <span className="text-xl font-black text-amber-400">{totalPurchaseCalc.toLocaleString()} DA</span>
+            <div className="p-4 bg-blue-50 rounded-2xl border-2 border-blue-200 flex items-center justify-between">
+              <span className="text-base text-blue-900 font-bold">الإجمالي النهائي:</span>
+              <span className="text-3xl font-black text-blue-700 font-mono">
+                {totalPurchaseCalc.toLocaleString()} DA
+              </span>
             </div>
 
             <button
               onClick={handleSavePurchase}
-              className="w-full py-2.5 bg-cyan-500 hover:bg-cyan-400 text-black font-bold text-xs rounded-xl active:scale-95 transition"
+              className="w-full py-3.5 bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-lg rounded-2xl shadow-lg hover:shadow-xl active:scale-95 transition"
             >
               تأكيد وإدخال للمخزون
             </button>
@@ -351,64 +392,70 @@ export const PurchasesManager: React.FC = () => {
 
       {/* Supplier Modal */}
       {showSupplierModal && (
-        <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-sm flex items-center justify-center p-3">
-          <div className="bg-neutral-900 border border-neutral-700 rounded-3xl max-w-sm w-full p-4 shadow-2xl space-y-3">
-            <div className="flex items-center justify-between border-b border-neutral-800 pb-2">
-              <h3 className="font-bold text-sm text-cyan-400">إضافة مورد جديد</h3>
-              <button onClick={() => setShowSupplierModal(false)} className="p-1 rounded bg-neutral-800 text-neutral-400">
-                <X className="w-4 h-4" />
+        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white border-2 border-slate-200 rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-4">
+            <div className="flex items-center justify-between border-b-2 border-slate-100 pb-3">
+              <h3 className="font-extrabold text-2xl text-slate-900 flex items-center gap-2">
+                <Building className="w-6 h-6 text-blue-600" />
+                <span>إضافة مورد جديد</span>
+              </h3>
+              <button
+                onClick={() => setShowSupplierModal(false)}
+                className="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 transition"
+              >
+                <X className="w-6 h-6" />
               </button>
             </div>
 
-            <div className="space-y-2 text-xs">
+            <div className="space-y-3">
               <div>
-                <label className="block text-neutral-400 mb-1">اسم المؤسسة أو المورد *</label>
+                <label className="block text-slate-700 font-bold text-base mb-1">اسم المؤسسة أو المورد *</label>
                 <input
                   type="text"
                   value={supName}
                   onChange={(e) => setSupName(e.target.value)}
                   placeholder="مؤسسة اللحوم والأسماك"
-                  className="w-full bg-neutral-950 border border-neutral-700 rounded-lg p-2 text-neutral-100"
+                  className="w-full bg-slate-50 border-2 border-slate-200 rounded-xl p-3 text-slate-900 font-semibold text-base focus:outline-none focus:border-blue-600 focus:bg-white"
                 />
               </div>
 
               <div>
-                <label className="block text-neutral-400 mb-1">الشخص المسؤول (Contact):</label>
+                <label className="block text-slate-700 font-bold text-base mb-1">الشخص المسؤول (Contact):</label>
                 <input
                   type="text"
                   value={supContact}
                   onChange={(e) => setSupContact(e.target.value)}
                   placeholder="السيد كمال"
-                  className="w-full bg-neutral-950 border border-neutral-700 rounded-lg p-2 text-neutral-100"
+                  className="w-full bg-slate-50 border-2 border-slate-200 rounded-xl p-3 text-slate-900 font-semibold text-base focus:outline-none focus:border-blue-600 focus:bg-white"
                 />
               </div>
 
               <div>
-                <label className="block text-neutral-400 mb-1">الهاتف:</label>
+                <label className="block text-slate-700 font-bold text-base mb-1">الهاتف:</label>
                 <input
                   type="tel"
                   value={supPhone}
                   onChange={(e) => setSupPhone(e.target.value)}
                   placeholder="0551223344"
-                  className="w-full bg-neutral-950 border border-neutral-700 rounded-lg p-2 text-neutral-100 font-mono"
+                  className="w-full bg-slate-50 border-2 border-slate-200 rounded-xl p-3 text-slate-900 font-mono font-bold text-base focus:outline-none focus:border-blue-600 focus:bg-white"
                 />
               </div>
 
               <div>
-                <label className="block text-neutral-400 mb-1">العنوان:</label>
+                <label className="block text-slate-700 font-bold text-base mb-1">العنوان:</label>
                 <input
                   type="text"
                   value={supAddress}
                   onChange={(e) => setSupAddress(e.target.value)}
                   placeholder="الجزائر العاصمة..."
-                  className="w-full bg-neutral-950 border border-neutral-700 rounded-lg p-2 text-neutral-100"
+                  className="w-full bg-slate-50 border-2 border-slate-200 rounded-xl p-3 text-slate-900 font-semibold text-base focus:outline-none focus:border-blue-600 focus:bg-white"
                 />
               </div>
             </div>
 
             <button
               onClick={handleSaveSupplier}
-              className="w-full py-2 bg-cyan-500 hover:bg-cyan-400 text-black font-bold text-xs rounded-xl active:scale-95 transition"
+              className="w-full py-3.5 bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-lg rounded-2xl shadow-lg hover:shadow-xl active:scale-95 transition mt-2"
             >
               حفظ المورد
             </button>

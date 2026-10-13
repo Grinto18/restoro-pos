@@ -48,54 +48,54 @@ export const ExpensesManager: React.FC = () => {
   const totalExpenses = expenses.reduce((sum, e) => sum + Number(e.amount), 0);
 
   return (
-    <div className="flex-1 flex flex-col h-[calc(100vh-84px)] overflow-hidden bg-neutral-950 p-4 select-none">
-      <div className="flex items-center justify-between gap-3 bg-neutral-900 p-3 rounded-2xl border border-neutral-800 shrink-0">
-        <div className="flex items-center gap-2">
-          <div className="font-bold text-sm text-yellow-400 flex items-center gap-1.5 pl-3 border-l border-neutral-800">
-            <Receipt className="w-5 h-5 text-yellow-500" />
+    <div className="flex-1 flex flex-col h-[calc(100vh-84px)] overflow-hidden bg-slate-50 p-5 select-none text-slate-900">
+      <div className="flex items-center justify-between gap-4 bg-white p-4 rounded-3xl border-2 border-slate-200 shadow-sm shrink-0">
+        <div className="flex items-center gap-3">
+          <div className="font-black text-xl text-black flex items-center gap-2 pl-3 border-l-2 border-slate-200">
+            <Receipt className="w-6 h-6 text-blue-600" />
             <span>المصاريف والنفقات (Charges)</span>
           </div>
 
-          <div className="font-mono text-xs bg-neutral-950 px-3 py-1 rounded-xl border border-neutral-800 text-neutral-300">
-            الإجمالي: <span className="font-bold text-yellow-400">{totalExpenses.toLocaleString()} DA</span>
+          <div className="text-sm bg-slate-100 px-4 py-2 rounded-2xl border border-slate-200 text-slate-800 font-bold">
+            الإجمالي: <span className="font-black text-red-600 text-lg">{totalExpenses.toLocaleString()} DA</span>
           </div>
         </div>
 
         <button
           onClick={() => setShowAddModal(true)}
-          className="bg-yellow-500 hover:bg-yellow-400 text-black px-3.5 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow"
+          className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-2xl text-sm font-black transition flex items-center gap-2 shadow-lg cursor-pointer"
         >
-          <Plus className="w-4 h-4" />
+          <Plus className="w-5 h-5 stroke-[3]" />
           <span>مصروف جديد</span>
         </button>
       </div>
 
-      <div className="flex-1 bg-neutral-900 rounded-2xl border border-neutral-800 overflow-hidden flex flex-col mt-3">
+      <div className="flex-1 bg-white rounded-3xl border-2 border-slate-200 overflow-hidden flex flex-col mt-4 shadow-sm">
         <div className="overflow-x-auto flex-1 no-scrollbar">
-          <table className="w-full text-right text-xs">
-            <thead className="bg-neutral-950 text-neutral-400 border-b border-neutral-800 font-bold">
+          <table className="w-full text-right text-sm">
+            <thead className="bg-slate-100 text-slate-800 border-b-2 border-slate-200 font-black">
               <tr>
-                <th className="p-3">الفئة</th>
-                <th className="p-3">البيان والتفاصيل</th>
-                <th className="p-3">المبلغ (DA)</th>
-                <th className="p-3">التاريخ</th>
-                <th className="p-3">المسجل</th>
+                <th className="p-4">الفئة</th>
+                <th className="p-4">البيان والتفاصيل</th>
+                <th className="p-4">المبلغ (DA)</th>
+                <th className="p-4">التاريخ</th>
+                <th className="p-4">المسجل</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-neutral-800/60 font-medium">
+            <tbody className="divide-y divide-slate-200 font-bold">
               {expenses.map((e) => (
-                <tr key={e.id} className="hover:bg-neutral-800/50 transition">
-                  <td className="p-3">
-                    <span className="bg-yellow-950/60 text-yellow-300 border border-yellow-800/60 px-2 py-0.5 rounded text-[10px] font-bold">
+                <tr key={e.id} className="hover:bg-blue-50/40 transition">
+                  <td className="p-4">
+                    <span className="bg-blue-50 text-blue-800 border border-blue-200 px-3 py-1 rounded-xl text-xs font-black">
                       {e.category}
                     </span>
                   </td>
-                  <td className="p-3 font-bold text-neutral-100">{e.description}</td>
-                  <td className="p-3 font-mono font-bold text-yellow-400 text-sm">
+                  <td className="p-4 font-black text-slate-900 text-base">{e.description}</td>
+                  <td className="p-4 font-black text-red-600 text-lg">
                     {Number(e.amount).toLocaleString()} DA
                   </td>
-                  <td className="p-3 font-mono text-neutral-400">{e.date}</td>
-                  <td className="p-3 text-neutral-300">{e.userName || '—'}</td>
+                  <td className="p-4 font-mono text-slate-500">{e.date}</td>
+                  <td className="p-4 text-slate-700">{e.userName || '—'}</td>
                 </tr>
               ))}
             </tbody>
@@ -104,22 +104,22 @@ export const ExpensesManager: React.FC = () => {
       </div>
 
       {showAddModal && (
-        <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-sm flex items-center justify-center p-3">
-          <div className="bg-neutral-900 border border-neutral-700 rounded-3xl max-w-sm w-full p-4 shadow-2xl space-y-3">
-            <div className="flex items-center justify-between border-b border-neutral-800 pb-2">
-              <h3 className="font-bold text-sm text-yellow-400">تسجيل مصروف جديد</h3>
-              <button onClick={() => setShowAddModal(false)} className="p-1 rounded bg-neutral-800 text-neutral-400">
-                <X className="w-4 h-4" />
+        <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white border-2 border-slate-200 rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-4 text-slate-900">
+            <div className="flex items-center justify-between border-b-2 border-slate-200 pb-3">
+              <h3 className="font-black text-2xl text-black">تسجيل مصروف جديد</h3>
+              <button onClick={() => setShowAddModal(false)} className="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600">
+                <X className="w-6 h-6" />
               </button>
             </div>
 
-            <div className="space-y-2 text-xs">
+            <div className="space-y-3 font-bold text-sm">
               <div>
-                <label className="block text-neutral-400 mb-1">نوع المصروف:</label>
+                <label className="block text-slate-700 mb-1">نوع المصروف:</label>
                 <select
                   value={category}
                   onChange={(e) => setCategory(e.target.value)}
-                  className="w-full bg-neutral-950 border border-neutral-700 rounded-lg p-2 text-neutral-100 font-bold"
+                  className="w-full bg-slate-50 border-2 border-slate-200 rounded-xl p-3 text-slate-900 font-black text-base focus:outline-none focus:border-blue-600"
                 >
                   <option value="ELECTRICITY">كهرباء (Électricité)</option>
                   <option value="GAS">غاز (Gaz)</option>
@@ -132,41 +132,41 @@ export const ExpensesManager: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-neutral-400 mb-1">المبلغ بالدينار (DA) *</label>
+                <label className="block text-slate-700 mb-1">المبلغ بالدينار (DA) *</label>
                 <input
                   type="number"
                   value={amount}
                   onChange={(e) => setAmount(e.target.value)}
                   placeholder="مثال: 4500"
-                  className="w-full bg-neutral-950 border border-neutral-700 rounded-lg p-2 text-amber-300 font-mono font-bold text-sm"
+                  className="w-full bg-slate-50 border-2 border-slate-200 rounded-xl p-3 text-red-600 font-black text-xl focus:outline-none focus:border-blue-600"
                 />
               </div>
 
               <div>
-                <label className="block text-neutral-400 mb-1">البيان / الوصف *</label>
+                <label className="block text-slate-700 mb-1">البيان / الوصف *</label>
                 <input
                   type="text"
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   placeholder="مثال: فاتورة كهرباء سونلغاز لشهر سبتمبر"
-                  className="w-full bg-neutral-950 border border-neutral-700 rounded-lg p-2 text-neutral-100"
+                  className="w-full bg-slate-50 border-2 border-slate-200 rounded-xl p-3 text-slate-900 text-base focus:outline-none focus:border-blue-600"
                 />
               </div>
 
               <div>
-                <label className="block text-neutral-400 mb-1">التاريخ</label>
+                <label className="block text-slate-700 mb-1">التاريخ</label>
                 <input
                   type="date"
                   value={date}
                   onChange={(e) => setDate(e.target.value)}
-                  className="w-full bg-neutral-950 border border-neutral-700 rounded-lg p-2 text-neutral-100 font-mono"
+                  className="w-full bg-slate-50 border-2 border-slate-200 rounded-xl p-3 text-slate-900 font-mono text-base focus:outline-none focus:border-blue-600"
                 />
               </div>
             </div>
 
             <button
               onClick={handleAddExpense}
-              className="w-full py-2 bg-yellow-500 hover:bg-yellow-400 text-black font-bold text-xs rounded-xl active:scale-95 transition"
+              className="w-full py-4 bg-blue-600 hover:bg-blue-700 text-white font-black text-xl rounded-2xl active:scale-95 transition shadow-xl cursor-pointer"
             >
               حفظ المصروف
             </button>

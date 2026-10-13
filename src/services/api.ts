@@ -32,6 +32,7 @@ async function request<T>(endpoint: string, options: RequestInit = {}): Promise<
     headers['Authorization'] = `Bearer ${token}`;
   }
 
+  let isUnauthorized = false;
   try {
     const res = await fetch(`/api${endpoint}`, {
       ...options,
@@ -39,6 +40,9 @@ async function request<T>(endpoint: string, options: RequestInit = {}): Promise<
     });
 
     if (!res.ok) {
+      if (res.status === 401) {
+        isUnauthorized = true;
+      }
       const errorJson = await res.json().catch(() => ({}));
       throw new Error(errorJson.error || `Request failed with status ${res.status}`);
     }
@@ -52,8 +56,8 @@ async function request<T>(endpoint: string, options: RequestInit = {}): Promise<
 
     return data;
   } catch (error: any) {
-    // If network error / offline, fallback to cache for GET requests
-    if (options.method === undefined || options.method === 'GET') {
+    // If network error / offline (and NOT 401 Unauthorized), fallback to cache for GET requests
+    if (!isUnauthorized && (options.method === undefined || options.method === 'GET')) {
       const cached = await getCachedData<T>(endpoint);
       if (cached) {
         console.warn(`Serving offline cached data for /api${endpoint}`);
@@ -310,7 +314,7 @@ export const api = {
 
   // Windows Thermal Printer Spooler
   getPrinterStatus: () => request<any>('/printer/status'),
-  spoolPrintJob: (data: { printerName?: string; rawBase64?: string; textContent?: string; orderNumber?: string }) =>
+  spoolPrintJob: (data: { printerName?: string; rawBase64?: string; textContent?: string; orderNumber?: string; copies?: number }) =>
     request<any>('/printer/spool', {
       method: 'POST',
       body: JSON.stringify(data),
@@ -321,6 +325,25 @@ export const api = {
     request<{ success: boolean; message: string }>('/menu/reset-grine', {
       method: 'POST',
     }),
+
+  // Backup & Export
+  exportBackup: async () => {
+    const [settings, categories, products, inventory] = await Promise.all([
+      request<Record<string, string>>('/settings').catch(() => ({})),
+      request<any[]>('/categories').catch(() => []),
+      request<any[]>('/products').catch(() => []),
+      request<any[]>('/inventory').catch(() => []),
+    ]);
+    return {
+      appName: 'Golden Palace POS',
+      version: '2.0.0',
+      exportedAt: new Date().toISOString(),
+      settings,
+      categories,
+      products,
+      inventory,
+    };
+  },
 
   // Offline Sync
   syncOfflineQueue: async () => {

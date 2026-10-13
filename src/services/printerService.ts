@@ -264,17 +264,50 @@ export const printerService = {
     });
   },
 
+  // Cache to prevent duplicate printing of the same order/ticket within cooldown window
+  _recentPrintJobs: new Map<string, number>(),
+
   // Send Direct Real Print Job to Windows Spooler & Thermal Driver
-  async sendDirectPrintJob(receiptData: any, profile: PrinterProfile): Promise<{
+  async sendDirectPrintJob(
+    receiptData: any,
+    profile: PrinterProfile,
+    options: { isReprint?: boolean } = {}
+  ): Promise<{
     success: boolean;
-    method: 'SPOOLER' | 'WEB_SERIAL' | 'BROWSER';
+    method: 'SPOOLER' | 'WEB_SERIAL' | 'BROWSER' | 'DEDUP';
     message: string;
   }> {
-    // 1. Prepare styles for thermal width
+    // 1. Prepare styles for thermal width & store for re-print
     this.applyPrintStyles(profile);
     this.setLastReceipt(receiptData);
 
-    // 2. Generate raw ESC/POS bytes
+    // 2. Deduplication check: prevent multiple triggers for the exact same order unless explicit reprint
+    const orderKey = String(receiptData.orderNumber || receiptData.dailySequence || 'unknown');
+    const jobKey = `${orderKey}_${receiptData.isKitchenTicket ? 'kitchen' : receiptData.isAddition ? 'addition' : 'invoice'}`;
+    const now = Date.now();
+
+    if (!options.isReprint && this._recentPrintJobs.has(jobKey)) {
+      const prevTime = this._recentPrintJobs.get(jobKey)!;
+      if (now - prevTime < 6000) {
+        console.warn(`[PrinterService] Ignored duplicate print call for ${jobKey} (${now - prevTime}ms ago)`);
+        return {
+          success: true,
+          method: 'DEDUP',
+          message: 'تم إرسال هذا الوصل للطباعة بالفعل (تم منع التكرار تلقائياً).',
+        };
+      }
+    }
+
+    this._recentPrintJobs.set(jobKey, now);
+
+    // Clean up older records
+    for (const [k, time] of this._recentPrintJobs.entries()) {
+      if (now - time > 60000) this._recentPrintJobs.delete(k);
+    }
+
+    const numCopies = Math.max(1, Math.min(5, Number(profile.copies) || 1));
+
+    // 3. Generate raw ESC/POS bytes
     const rawBytes = this.generateEscPosCommands(receiptData, profile);
     let rawBase64 = '';
     for (let i = 0; i < rawBytes.length; i++) {
@@ -282,41 +315,55 @@ export const printerService = {
     }
     rawBase64 = btoa(rawBase64);
 
-    // 3. Try Server Windows Print Spooler
+    // 4. Try Server Windows Print Spooler (Single Unified Route)
     try {
       const { api } = await import('./api.ts');
       const spoolRes = await api.spoolPrintJob({
         printerName: profile.printerName,
         rawBase64,
         orderNumber: receiptData.orderNumber,
+        copies: numCopies,
       });
 
+      // If natively spooled to Windows printer, RETURN IMMEDIATELY (Do NOT call window.print)
       if (spoolRes.mode === 'spooled_to_windows') {
         return {
           success: true,
           method: 'SPOOLER',
-          message: `تم إرسال الفاتورة مباشرة إلى طابعة Windows (${profile.printerName}) عبر Print Spooler.`,
+          message: `تم إرسال الفاتورة بنجاح إلى طابعة Windows (${profile.printerName}) [${numCopies} نسخة].`,
+        };
+      } else if (spoolRes.mode === 'container_ready') {
+        // In browser / web preview mode: trigger browser print dialog ONCE
+        window.print();
+        return {
+          success: true,
+          method: 'BROWSER',
+          message: 'تم فتح نافذة الطباعة الحرارية بنجاح مع ضبط مقاس الرول التلقائي.',
         };
       }
     } catch (spoolErr) {
-      console.warn('Backend spool attempt:', spoolErr);
+      console.warn('Backend spool failed, attempting browser print fallback:', spoolErr);
+      try {
+        window.print();
+        return {
+          success: true,
+          method: 'BROWSER',
+          message: 'تم فتح نافذة الطباعة الحرارية كمسار بديل.',
+        };
+      } catch (err: any) {
+        return {
+          success: false,
+          method: 'BROWSER',
+          message: err.message || 'فشلت الطباعة',
+        };
+      }
     }
 
-    // 4. Also trigger browser thermal print with exact @page settings
-    try {
-      window.print();
-      return {
-        success: true,
-        method: 'BROWSER',
-        message: 'تم فتح نافذة الطباعة الحرارية بنجاح مع ضبط مقاس الرول التلقائي.',
-      };
-    } catch (err: any) {
-      return {
-        success: false,
-        method: 'BROWSER',
-        message: err.message || 'فشلت الطباعة',
-      };
-    }
+    return {
+      success: true,
+      method: 'BROWSER',
+      message: 'تمت معالجة أمر الطباعة بنجاح.',
+    };
   },
 
   // Direct USB / Serial POS printer via Web Serial API

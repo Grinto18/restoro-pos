@@ -78,31 +78,33 @@ export const ReceiptPrint: React.FC<ReceiptPrintProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-[100] bg-black/85 backdrop-blur-sm flex items-center justify-center p-3 select-none">
-      <div className="bg-neutral-900 border border-neutral-700 rounded-3xl max-w-md w-full p-4 shadow-2xl space-y-3">
+    <div className="fixed inset-0 z-[100] bg-black/75 backdrop-blur-sm flex items-center justify-center p-3 select-none">
+      <div className="bg-white border-2 border-slate-200 rounded-3xl max-w-lg w-full p-5 shadow-2xl space-y-4">
         {/* Top Controls Bar */}
-        <div className="flex items-center justify-between border-b border-neutral-800 pb-2 print:hidden">
-          <div className="flex items-center gap-2">
-            <Printer className="w-5 h-5 text-amber-500" />
+        <div className="flex items-center justify-between border-b-2 border-slate-100 pb-3 print:hidden">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-blue-50 border border-blue-200 flex items-center justify-center text-blue-600">
+              <Printer className="w-6 h-6" />
+            </div>
             <div>
-              <span className="font-bold text-sm text-neutral-100 block">
+              <span className="font-extrabold text-lg text-slate-900 block">
                 {isDiagnostic
                   ? 'معاينة تذكرة الفحص والمعايرة'
                   : isKitchen
                   ? 'تذكرة المطبخ (Bon Cuisine)'
                   : 'معاينة إيصال الزبون'}
               </span>
-              <span className="text-[10px] text-amber-400 font-mono">
-                الطابعة: {profile.printerName} • العرض الآمن: {profile.printableWidth}mm
+              <span className="text-xs text-blue-700 font-mono font-bold">
+                الطابعة: {profile.printerName} • العرض: {profile.printableWidth}mm
               </span>
             </div>
           </div>
 
-          <div className="flex items-center gap-1.5">
+          <div className="flex items-center gap-2">
             <button
               onClick={handleBrowserPrint}
               disabled={printStatus === 'PRINTING'}
-              className="px-3 py-1.5 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 disabled:opacity-50 text-black text-xs font-black rounded-lg transition active:scale-95 shadow flex items-center gap-1.5"
+              className="px-4 py-2.5 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white text-sm font-extrabold rounded-xl transition active:scale-95 shadow-md flex items-center gap-2"
             >
               <Printer className="w-4 h-4" />
               <span>إرسال للطابعة (Windows)</span>
@@ -111,7 +113,7 @@ export const ReceiptPrint: React.FC<ReceiptPrintProps> = ({
             {'serial' in navigator && (
               <button
                 onClick={handleWebSerialPrint}
-                className="px-2 py-1.5 bg-neutral-800 hover:bg-neutral-700 text-cyan-400 rounded-lg text-xs border border-neutral-700 font-mono font-bold flex items-center gap-1"
+                className="px-3 py-2 bg-slate-100 hover:bg-blue-50 hover:text-blue-700 text-slate-700 rounded-xl text-xs border border-slate-200 font-mono font-bold flex items-center gap-1"
                 title="طباعة مباشرة عبر منفذ USB/Serial بدون تعريف"
               >
                 <span>USB Serial</span>
@@ -120,13 +122,13 @@ export const ReceiptPrint: React.FC<ReceiptPrintProps> = ({
 
             <button
               onClick={handleDownloadEscPos}
-              className="p-1.5 bg-neutral-800 hover:bg-neutral-700 text-neutral-300 rounded-lg text-xs border border-neutral-700"
+              className="p-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs border border-slate-200"
               title="تصدير ملف خام ESC/POS"
             >
               <Download className="w-4 h-4" />
             </button>
 
-            <button onClick={onClose} className="p-1 rounded-full bg-neutral-800 text-neutral-400">
+            <button onClick={onClose} className="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600">
               <X className="w-5 h-5" />
             </button>
           </div>
@@ -135,32 +137,32 @@ export const ReceiptPrint: React.FC<ReceiptPrintProps> = ({
         {/* Status Notification */}
         {printStatus !== 'IDLE' && (
           <div
-            className={`p-2 rounded-xl text-xs flex items-center gap-2 font-bold ${
+            className={`p-3 rounded-xl text-sm flex items-center gap-2.5 font-bold ${
               printStatus === 'PRINTED'
-                ? 'bg-emerald-950/80 border border-emerald-700 text-emerald-300'
+                ? 'bg-emerald-50 border-2 border-emerald-200 text-emerald-800'
                 : printStatus === 'FAILED'
-                ? 'bg-red-950/80 border border-red-700 text-red-300'
-                : 'bg-amber-950/80 border border-amber-700 text-amber-300'
+                ? 'bg-rose-50 border-2 border-rose-200 text-rose-800'
+                : 'bg-blue-50 border-2 border-blue-200 text-blue-800'
             }`}
           >
             {printStatus === 'PRINTED' ? (
-              <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+              <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
             ) : printStatus === 'FAILED' ? (
-              <AlertCircle className="w-4 h-4 text-red-400 shrink-0" />
+              <AlertCircle className="w-5 h-5 text-rose-600 shrink-0" />
             ) : (
-              <div className="w-3.5 h-3.5 border-2 border-amber-400 border-t-transparent rounded-full animate-spin shrink-0" />
+              <div className="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin shrink-0" />
             )}
             <span>{statusMessage}</span>
           </div>
         )}
 
         {/* Printable Width Adjustment Quick Bar */}
-        <div className="flex items-center justify-between bg-neutral-950 p-2 rounded-xl border border-neutral-800 text-[11px] print:hidden">
-          <div className="text-neutral-400 flex items-center gap-1">
-            <Sliders className="w-3.5 h-3.5 text-amber-500" />
+        <div className="flex items-center justify-between bg-slate-50 p-2.5 rounded-xl border border-slate-200 text-xs print:hidden">
+          <div className="text-slate-600 font-bold flex items-center gap-1.5">
+            <Sliders className="w-4 h-4 text-blue-600" />
             <span>عرض رأس الطباعة:</span>
           </div>
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-1.5">
             {[68, 70, 72, 74, 76, 80].map((w) => (
               <button
                 key={w}
@@ -169,10 +171,10 @@ export const ReceiptPrint: React.FC<ReceiptPrintProps> = ({
                   setProfile(updated);
                   printerService.saveProfile(updated);
                 }}
-                className={`px-2 py-0.5 rounded font-mono font-bold transition text-xs ${
+                className={`px-2.5 py-1 rounded-lg font-mono font-bold transition text-xs ${
                   profile.printableWidth === w
-                    ? 'bg-amber-500 text-black shadow'
-                    : 'bg-neutral-800 text-neutral-300 hover:bg-neutral-700'
+                    ? 'bg-blue-600 text-white shadow'
+                    : 'bg-white text-slate-700 border border-slate-200 hover:bg-slate-100'
                 }`}
                 title={w === 70 ? 'عرض الحماية الفائقة الموصى به' : w === 72 ? 'الافتراضي القياسي 576 dots' : `${w}mm`}
               >
@@ -184,20 +186,20 @@ export const ReceiptPrint: React.FC<ReceiptPrintProps> = ({
 
         {/* Quick Windows CMD Spool Command Bar for Diagnostics */}
         {isDiagnostic && (
-          <div className="bg-neutral-950 p-2 rounded-xl border border-neutral-800 text-[10px] text-neutral-300 space-y-1 print:hidden">
-            <div className="flex items-center justify-between font-mono text-amber-400 font-bold">
+          <div className="bg-slate-50 p-3 rounded-xl border border-slate-200 text-xs text-slate-700 space-y-1.5 print:hidden">
+            <div className="flex items-center justify-between font-mono text-blue-700 font-bold">
               <span>أمر الطباعة المباشرة لتخطي مشاكل Driver 80Normal (CMD):</span>
               <button
                 onClick={() => {
                   navigator.clipboard.writeText(printerService.getWindowsSpoolCommand());
                   alert('تم نسخ أمر الطباعة المباشر لـ Windows CMD:\n' + printerService.getWindowsSpoolCommand());
                 }}
-                className="bg-neutral-800 hover:bg-neutral-700 text-amber-300 px-2 py-0.5 rounded text-[10px]"
+                className="bg-white hover:bg-slate-100 border border-slate-200 text-blue-700 px-2 py-1 rounded-lg text-xs"
               >
                 نسخ الأمر
               </button>
             </div>
-            <code className="block bg-black px-2 py-1 rounded text-cyan-300 font-mono text-[9px] select-all">
+            <code className="block bg-slate-900 text-white px-3 py-1.5 rounded-lg font-mono text-xs select-all">
               {printerService.getWindowsSpoolCommand()}
             </code>
           </div>

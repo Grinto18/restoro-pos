@@ -40,6 +40,7 @@ interface PosContextType {
   clearCart: () => void;
   loadHeldOrderIntoCart: (order: any) => void;
   refreshShift: () => Promise<void>;
+  refreshHeldOrders: () => Promise<void>;
   refreshOfflineCount: () => Promise<void>;
   triggerSync: () => Promise<{ count: number }>;
   setReceiptToPrint: (receipt: any | null) => void;
@@ -66,7 +67,7 @@ export const PosProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [offlineOrdersCount, setOfflineOrdersCount] = useState<number>(0);
   const [receiptToPrint, setReceiptToPrint] = useState<any | null>(null);
 
-  // Monitor network connectivity
+  // Monitor network connectivity & refresh POS state when logged in
   useEffect(() => {
     const handleOnline = () => {
       setIsOnline(true);
@@ -77,8 +78,11 @@ export const PosProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     window.addEventListener('online', handleOnline);
     window.addEventListener('offline', handleOffline);
 
-    refreshShift();
-    refreshHeldOrders();
+    const token = localStorage.getItem('golden_palace_auth_token');
+    if (token) {
+      refreshShift();
+      refreshHeldOrders();
+    }
     refreshOfflineCount();
 
     return () => {
@@ -324,6 +328,7 @@ export const PosProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         clearCart,
         loadHeldOrderIntoCart,
         refreshShift,
+        refreshHeldOrders,
         refreshOfflineCount,
         triggerSync,
         setReceiptToPrint,

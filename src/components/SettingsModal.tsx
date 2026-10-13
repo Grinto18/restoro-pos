@@ -104,48 +104,60 @@ export const SettingsModal: React.FC = () => {
     }
   };
 
-  const handleDownloadBackup = () => {
-    window.location.href = '/api/backups/export';
+  const handleDownloadBackup = async () => {
+    try {
+      const backup = await api.exportBackup();
+      const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(backup, null, 2));
+      const downloadAnchor = document.createElement('a');
+      downloadAnchor.setAttribute('href', dataStr);
+      downloadAnchor.setAttribute('download', `golden_palace_backup_${new Date().toISOString().slice(0, 10)}.json`);
+      document.body.appendChild(downloadAnchor);
+      downloadAnchor.click();
+      downloadAnchor.remove();
+    } catch (err) {
+      alert('فشل تصدير النسخة الاحتياطية');
+    }
   };
 
   return (
-    <div className="flex-1 flex flex-col h-[calc(100vh-84px)] overflow-hidden bg-neutral-950 p-4 select-none">
-      <div className="flex items-center justify-between gap-3 bg-neutral-900 p-3 rounded-2xl border border-neutral-800 shrink-0">
-        <div className="flex items-center gap-2">
-          <div className="font-bold text-sm text-amber-400 flex items-center gap-1.5 pl-3 border-l border-neutral-800">
-            <Settings className="w-5 h-5 text-amber-500" />
-            <span>إعدادات النظام والموظفين (Configuration & Backup)</span>
+    <div className="flex-1 flex flex-col h-[calc(100vh-84px)] overflow-hidden bg-slate-50 p-5 select-none text-slate-900">
+      {/* Header and Tab switcher */}
+      <div className="flex items-center justify-between gap-4 bg-white p-4 rounded-3xl border-2 border-slate-200 shadow-sm shrink-0">
+        <div className="flex items-center gap-3">
+          <div className="font-black text-xl text-black flex items-center gap-2 pl-3 border-l-2 border-slate-200">
+            <Settings className="w-6 h-6 text-blue-600" />
+            <span>إعدادات النظام (Configuration)</span>
           </div>
 
-          <div className="flex items-center gap-1.5 bg-neutral-950 p-1 rounded-xl border border-neutral-800 text-xs">
+          <div className="flex items-center gap-2 bg-slate-100 p-1.5 rounded-2xl border border-slate-200 text-sm">
             <button
               onClick={() => setActiveTab('GENERAL')}
-              className={`px-3 py-1.5 rounded-lg font-bold transition ${
-                activeTab === 'GENERAL' ? 'bg-amber-500 text-black shadow' : 'text-neutral-400'
+              className={`px-4 py-2 rounded-xl font-black transition cursor-pointer ${
+                activeTab === 'GENERAL' ? 'bg-blue-600 text-white shadow-md' : 'text-slate-700 hover:text-black'
               }`}
             >
               بيانات المطعم
             </button>
             <button
               onClick={() => setActiveTab('STAFF')}
-              className={`px-3 py-1.5 rounded-lg font-bold transition ${
-                activeTab === 'STAFF' ? 'bg-amber-500 text-black shadow' : 'text-neutral-400'
+              className={`px-4 py-2 rounded-xl font-black transition cursor-pointer ${
+                activeTab === 'STAFF' ? 'bg-blue-600 text-white shadow-md' : 'text-slate-700 hover:text-black'
               }`}
             >
               الموظفين والأدوار (RBAC)
             </button>
             <button
               onClick={() => setActiveTab('BACKUP')}
-              className={`px-3 py-1.5 rounded-lg font-bold transition ${
-                activeTab === 'BACKUP' ? 'bg-amber-500 text-black shadow' : 'text-neutral-400'
+              className={`px-4 py-2 rounded-xl font-black transition cursor-pointer ${
+                activeTab === 'BACKUP' ? 'bg-blue-600 text-white shadow-md' : 'text-slate-700 hover:text-black'
               }`}
             >
               النسخ الاحتياطي (Backup)
             </button>
             <button
               onClick={() => setActiveTab('PRINTER')}
-              className={`px-3 py-1.5 rounded-lg font-bold transition ${
-                activeTab === 'PRINTER' ? 'bg-amber-500 text-black shadow' : 'text-neutral-400'
+              className={`px-4 py-2 rounded-xl font-black transition cursor-pointer ${
+                activeTab === 'PRINTER' ? 'bg-blue-600 text-white shadow-md' : 'text-slate-700 hover:text-black'
               }`}
             >
               الطباعة والفواتير
@@ -156,78 +168,78 @@ export const SettingsModal: React.FC = () => {
         {activeTab === 'GENERAL' && (
           <button
             onClick={handleSaveSettings}
-            className="bg-amber-500 hover:bg-amber-400 text-black px-4 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow"
+            className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-2xl text-sm font-black transition flex items-center gap-2 shadow-lg cursor-pointer"
           >
-            <Save className="w-4 h-4" />
+            <Save className="w-5 h-5 stroke-[2.5]" />
             <span>حفظ الإعدادات</span>
           </button>
         )}
       </div>
 
-      <div className="flex-1 bg-neutral-900 rounded-2xl border border-neutral-800 p-4 mt-3 overflow-y-auto no-scrollbar">
+      <div className="flex-1 bg-white rounded-3xl border-2 border-slate-200 p-6 mt-4 overflow-y-auto no-scrollbar shadow-sm">
         {/* TAB 1: GENERAL */}
         {activeTab === 'GENERAL' && (
-          <div className="max-w-2xl space-y-3 text-xs">
-            <div className="grid grid-cols-2 gap-3">
+          <div className="max-w-2xl space-y-4 text-sm font-bold">
+            <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-neutral-400 mb-1">اسم المطعم:</label>
+                <label className="block text-slate-700 mb-1">اسم المطعم:</label>
                 <input
                   type="text"
-                  value={settings['restaurant_name'] || 'GRINE RESTAURANT'}
+                  value={settings['restaurant_name'] || 'GOLDEN PALACE POS'}
                   onChange={(e) => setSettings({ ...settings, restaurant_name: e.target.value })}
-                  className="w-full bg-neutral-950 border border-neutral-700 rounded-lg p-2 text-neutral-100 font-bold"
+                  className="w-full bg-slate-50 border-2 border-slate-200 rounded-xl p-3 text-slate-900 font-black text-base focus:outline-none focus:border-blue-600"
                 />
               </div>
 
               <div>
-                <label className="block text-neutral-400 mb-1">العلامة التجارية / الفرع:</label>
+                <label className="block text-slate-700 mb-1">العلامة التجارية / الفرع:</label>
                 <input
                   type="text"
-                  value={settings['restaurant_brand'] || 'Grine Restaurant • مطعم قرين'}
+                  value={settings['restaurant_brand'] || 'مطعم القصر الذهبي • عند الجيجلي'}
                   onChange={(e) => setSettings({ ...settings, restaurant_brand: e.target.value })}
-                  className="w-full bg-neutral-950 border border-neutral-700 rounded-lg p-2 text-neutral-100"
+                  className="w-full bg-slate-50 border-2 border-slate-200 rounded-xl p-3 text-slate-900 text-base focus:outline-none focus:border-blue-600"
                 />
               </div>
 
               <div>
-                <label className="block text-neutral-400 mb-1">الهاتف الرسمي للمطعم:</label>
+                <label className="block text-slate-700 mb-1">الهاتف الرسمي للمطعم:</label>
                 <input
                   type="text"
                   value={settings['restaurant_phone'] || '0550123456'}
                   onChange={(e) => setSettings({ ...settings, restaurant_phone: e.target.value })}
-                  className="w-full bg-neutral-950 border border-neutral-700 rounded-lg p-2 text-neutral-100 font-mono"
+                  className="w-full bg-slate-50 border-2 border-slate-200 rounded-xl p-3 text-slate-900 font-mono text-base focus:outline-none focus:border-blue-600"
                 />
               </div>
 
               <div>
-                <label className="block text-neutral-400 mb-1">العملة:</label>
+                <label className="block text-slate-700 mb-1">العملة:</label>
                 <input
                   type="text"
                   value={settings['currency'] || 'DZD'}
                   onChange={(e) => setSettings({ ...settings, currency: e.target.value })}
-                  className="w-full bg-neutral-950 border border-neutral-700 rounded-lg p-2 text-neutral-100 font-bold"
+                  className="w-full bg-slate-50 border-2 border-slate-200 rounded-xl p-3 text-slate-900 font-black text-base focus:outline-none focus:border-blue-600"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-neutral-400 mb-1">العنوان الكامل:</label>
+              <label className="block text-slate-700 mb-1">العنوان الكامل:</label>
               <textarea
                 rows={2}
                 value={
                   settings['restaurant_address'] ||
-                  'الجزائر العاصمة • مطعم قرين للمأكولات الراقية'
+                  'شارع بلهوشات، حسين داي، الجزائر العاصمة'
                 }
                 onChange={(e) => setSettings({ ...settings, restaurant_address: e.target.value })}
-                className="w-full bg-neutral-950 border border-neutral-700 rounded-lg p-2 text-neutral-100"
+                className="w-full bg-slate-50 border-2 border-slate-200 rounded-xl p-3 text-slate-900 text-base focus:outline-none focus:border-blue-600"
               />
             </div>
 
-            <div className="pt-2 border-t border-neutral-800">
+            <div className="pt-3 border-t-2 border-slate-200">
               <button
                 type="button"
                 onClick={async () => {
-                  if (!confirm('هل تريد إعادة بناء ومزامنة قائمة Grine Restaurant الكاملة في قاعدة البيانات؟')) return;
+                  if (!confirm('هل تريد إعادة بناء ومزامنة قائمة الطعام في قاعدة البيانات؟')) return;
                   try {
                     const res = await api.resetGrineMenu();
                     alert(res.message);
@@ -236,10 +248,10 @@ export const SettingsModal: React.FC = () => {
                     alert('خطأ: ' + err.message);
                   }
                 }}
-                className="py-2.5 px-4 bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 font-bold rounded-xl border border-amber-500/40 text-xs flex items-center gap-2"
+                className="py-3 px-5 bg-blue-50 hover:bg-blue-100 text-blue-800 font-black rounded-2xl border-2 border-blue-200 text-sm flex items-center gap-2 cursor-pointer shadow-sm"
               >
-                <RotateCcw className="w-4 h-4" />
-                <span>إعادة توليد وتحديث قائمة مطعم Grine Restaurant في قاعدة البيانات</span>
+                <RotateCcw className="w-5 h-5 text-blue-600" />
+                <span>إعادة توليد وتحديث قائمة المطعم في قاعدة البيانات المحلية</span>
               </button>
             </div>
           </div>
@@ -249,42 +261,42 @@ export const SettingsModal: React.FC = () => {
         {activeTab === 'STAFF' && (
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <span className="text-xs text-neutral-400">
+              <span className="text-sm text-slate-600 font-bold">
                 الموظفون المصرح لهم بالدخول للنظام ورموز PIN الخاصة بهم
               </span>
               <button
                 onClick={() => setShowAddStaffModal(true)}
-                className="bg-amber-500 hover:bg-amber-400 text-black px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5"
+                className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-2xl text-sm font-black transition flex items-center gap-2 shadow-lg cursor-pointer"
               >
-                <Plus className="w-4 h-4" />
+                <Plus className="w-5 h-5 stroke-[3]" />
                 <span>إضافة موظف جديد</span>
               </button>
             </div>
 
-            <div className="overflow-x-auto">
-              <table className="w-full text-right text-xs">
-                <thead className="bg-neutral-950 text-neutral-400 border-b border-neutral-800 font-bold">
+            <div className="overflow-x-auto rounded-2xl border-2 border-slate-200">
+              <table className="w-full text-right text-sm">
+                <thead className="bg-slate-100 text-slate-800 border-b-2 border-slate-200 font-black">
                   <tr>
-                    <th className="p-3">الاسم الكامل</th>
-                    <th className="p-3">اسم المستخدم</th>
-                    <th className="p-3">الدور والوظيفة</th>
-                    <th className="p-3">رمز PIN السريع</th>
-                    <th className="p-3">الحالة</th>
+                    <th className="p-4">الاسم الكامل</th>
+                    <th className="p-4">اسم المستخدم</th>
+                    <th className="p-4">الدور والوظيفة</th>
+                    <th className="p-4">رمز PIN السريع</th>
+                    <th className="p-4">الحالة</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-neutral-800/60 font-medium">
+                <tbody className="divide-y divide-slate-200 font-bold">
                   {staffUsers.map((u) => (
-                    <tr key={u.id} className="hover:bg-neutral-800/50 transition">
-                      <td className="p-3 font-bold text-neutral-100">{u.fullName}</td>
-                      <td className="p-3 font-mono text-cyan-400">{u.username}</td>
-                      <td className="p-3">
-                        <span className="bg-amber-500/20 text-amber-300 border border-amber-500/30 px-2 py-0.5 rounded text-[10px] font-bold">
+                    <tr key={u.id} className="hover:bg-blue-50/40 transition">
+                      <td className="p-4 font-black text-slate-900 text-base">{u.fullName}</td>
+                      <td className="p-4 text-blue-700">{u.username}</td>
+                      <td className="p-4">
+                        <span className="bg-blue-50 text-blue-800 border border-blue-200 px-3 py-1 rounded-xl text-xs font-black">
                           {u.role}
                         </span>
                       </td>
-                      <td className="p-3 font-mono font-bold text-neutral-200">{u.pin || '—'}</td>
-                      <td className="p-3">
-                        <span className="bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded text-[10px] font-bold">
+                      <td className="p-4 font-mono font-black text-slate-900 text-base">{u.pin || '—'}</td>
+                      <td className="p-4">
+                        <span className="bg-emerald-100 text-emerald-800 px-3 py-1 rounded-xl text-xs font-black">
                           نشط
                         </span>
                       </td>
@@ -298,21 +310,21 @@ export const SettingsModal: React.FC = () => {
 
         {/* TAB 3: BACKUP */}
         {activeTab === 'BACKUP' && (
-          <div className="max-w-md space-y-4 text-xs">
-            <div className="p-4 bg-neutral-950 rounded-2xl border border-neutral-800 space-y-3">
-              <div className="flex items-center gap-2 text-cyan-400 font-bold">
-                <Database className="w-5 h-5" />
-                <span className="text-sm">تصدير نسخة احتياطية كاملة (Backup)</span>
+          <div className="max-w-md space-y-4 text-sm">
+            <div className="p-6 bg-slate-50 rounded-3xl border-2 border-slate-200 space-y-4">
+              <div className="flex items-center gap-2 text-black font-black">
+                <Database className="w-6 h-6 text-blue-600" />
+                <span className="text-lg">تصدير نسخة احتياطية كاملة (Backup)</span>
               </div>
-              <p className="text-neutral-400 leading-relaxed">
+              <p className="text-slate-600 leading-relaxed font-semibold">
                 يقوم النظام بتصدير جميع بيانات المطعم (القوائم، الفواتير، المخزون، الطاولات،
-                الزبائن، الموردين) كملف JSON آمن ومحمي.
+                الزبائن، الموردين) كملف JSON آمن ومحمي ومحفوظ محلياً.
               </p>
               <button
                 onClick={handleDownloadBackup}
-                className="w-full py-2.5 bg-cyan-600 hover:bg-cyan-500 text-black font-bold text-xs rounded-xl transition flex items-center justify-center gap-2 shadow"
+                className="w-full py-4 bg-blue-600 hover:bg-blue-700 text-white font-black text-base rounded-2xl transition flex items-center justify-center gap-2 shadow-xl cursor-pointer"
               >
-                <Download className="w-4 h-4" />
+                <Download className="w-5 h-5 stroke-[2.5]" />
                 <span>تحميل النسخة الاحتياطية الآن</span>
               </button>
             </div>
@@ -321,37 +333,37 @@ export const SettingsModal: React.FC = () => {
 
         {/* TAB 4: PRINTER (Advanced Calibration & Diagnostic Station) */}
         {activeTab === 'PRINTER' && (
-          <div className="max-w-4xl space-y-4 text-xs">
+          <div className="max-w-4xl space-y-5 text-sm font-bold">
             {/* Top Status & Quick Action Buttons */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {/* Printer Hardware Info Card */}
-              <div className="bg-neutral-950 p-3.5 rounded-2xl border border-neutral-800 space-y-2 md:col-span-2">
+              <div className="bg-slate-50 p-5 rounded-3xl border-2 border-slate-200 space-y-3 md:col-span-2 shadow-sm">
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center border border-amber-500/30">
-                      <Printer className="w-4 h-4" />
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-2xl bg-blue-100 text-blue-700 flex items-center justify-center">
+                      <Printer className="w-5 h-5" />
                     </div>
                     <div>
-                      <h4 className="font-bold text-sm text-neutral-100 flex items-center gap-2">
+                      <h4 className="font-black text-lg text-black flex items-center gap-2">
                         <span>{printerProfile.printerName}</span>
-                        <span className="text-[10px] bg-emerald-950 text-emerald-400 border border-emerald-800 px-1.5 py-0.5 rounded font-mono font-bold">
-                          Default Windows Printer
+                        <span className="text-xs bg-emerald-100 text-emerald-800 border border-emerald-300 px-2 py-0.5 rounded-lg font-black">
+                          طابعة Windows الافتراضية
                         </span>
                       </h4>
-                      <p className="text-[11px] text-neutral-400 font-mono">
+                      <p className="text-xs text-slate-500 font-bold">
                         Driver: {printerProfile.driver} • مقاس الورق: {printerProfile.paperType}
                       </p>
                     </div>
                   </div>
 
-                  <span className="text-[11px] bg-amber-500/20 text-amber-300 font-mono font-bold px-2 py-1 rounded-lg border border-amber-500/30">
-                    العرض الفعّال: {printerProfile.printableWidth} mm
+                  <span className="text-sm bg-blue-100 text-blue-800 font-black px-3 py-1.5 rounded-xl border border-blue-200">
+                    العرض: {printerProfile.printableWidth} mm
                   </span>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-2 border-t border-neutral-800/80 text-[11px]">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-3 border-t border-slate-200 text-sm">
                   <div>
-                    <label className="text-neutral-400 block mb-0.5 font-bold">اسم الطابعة في Windows (Printer Name):</label>
+                    <label className="text-slate-700 block mb-1 font-black">اسم الطابعة في Windows:</label>
                     <input
                       type="text"
                       value={printerProfile.printerName}
@@ -361,11 +373,11 @@ export const SettingsModal: React.FC = () => {
                         printerService.saveProfile(updated);
                       }}
                       placeholder="CAFETERIA"
-                      className="w-full bg-neutral-900 border border-neutral-700 rounded-lg px-2 py-1 text-amber-300 font-mono font-bold"
+                      className="w-full bg-white border-2 border-slate-200 rounded-xl px-3 py-2 text-blue-700 font-black text-base"
                     />
                   </div>
                   <div>
-                    <label className="text-neutral-400 block mb-0.5 font-bold">اسم الدرايفر (Driver):</label>
+                    <label className="text-slate-700 block mb-1 font-black">اسم الدرايفر (Driver):</label>
                     <input
                       type="text"
                       value={printerProfile.driver}
@@ -375,26 +387,26 @@ export const SettingsModal: React.FC = () => {
                         printerService.saveProfile(updated);
                       }}
                       placeholder="80Normal"
-                      className="w-full bg-neutral-900 border border-neutral-700 rounded-lg px-2 py-1 text-neutral-200 font-mono"
+                      className="w-full bg-white border-2 border-slate-200 rounded-xl px-3 py-2 text-slate-900 font-bold text-base"
                     />
                   </div>
                 </div>
 
-                <div className="grid grid-cols-3 gap-2 pt-2 border-t border-neutral-800/80 text-[11px]">
+                <div className="grid grid-cols-3 gap-3 pt-3 border-t border-slate-200 text-xs">
                   <div>
-                    <span className="text-neutral-500 block">عرض رأس الطباعة:</span>
-                    <span className="text-neutral-200 font-bold font-mono">
+                    <span className="text-slate-500 block">عرض رأس الطباعة:</span>
+                    <span className="text-slate-900 font-black text-sm">
                       {printerProfile.printableWidth} mm (
                       {Math.round((printerProfile.printableWidth / 25.4) * 203)} dots)
                     </span>
                   </div>
                   <div>
-                    <span className="text-neutral-500 block">الهوامش (Margins):</span>
-                    <span className="text-neutral-200 font-bold font-mono">0 mm (Zero-Margin)</span>
+                    <span className="text-slate-500 block">الهوامش (Margins):</span>
+                    <span className="text-slate-900 font-black text-sm">0 mm (Zero-Margin)</span>
                   </div>
                   <div>
-                    <span className="text-neutral-500 block">التغذية بعد الطباعة:</span>
-                    <span className="text-neutral-200 font-bold font-mono">
+                    <span className="text-slate-500 block">التغذية بعد الطباعة:</span>
+                    <span className="text-slate-900 font-black text-sm">
                       {printerProfile.feedAfter} أسطر + قص آلي
                     </span>
                   </div>
@@ -402,16 +414,16 @@ export const SettingsModal: React.FC = () => {
               </div>
 
               {/* Direct Instant Actions */}
-              <div className="bg-neutral-950 p-3 rounded-2xl border border-neutral-800 flex flex-col justify-between gap-2">
+              <div className="bg-slate-50 p-4 rounded-3xl border-2 border-slate-200 flex flex-col justify-between gap-3 shadow-sm">
                 <button
                   onClick={() => {
                     const testData = printerService.generateTestReceiptData(printerProfile);
                     setReceiptToPrint(testData);
                   }}
-                  className="w-full py-2 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-black font-black rounded-xl text-xs flex items-center justify-center gap-1.5 shadow transition active:scale-95"
+                  className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-black rounded-2xl text-sm flex items-center justify-center gap-2 shadow-lg transition active:scale-95 cursor-pointer"
                 >
-                  <FileText className="w-4 h-4" />
-                  <span>طباعة تذكرة فحص ومعايرة (80mm)</span>
+                  <FileText className="w-5 h-5 stroke-[2.5]" />
+                  <span>طباعة تذكرة فحص (80mm)</span>
                 </button>
 
                 <button
@@ -424,37 +436,30 @@ export const SettingsModal: React.FC = () => {
                       setReceiptToPrint(testData);
                     }
                   }}
-                  className="w-full py-1.5 bg-neutral-800 hover:bg-neutral-750 text-neutral-200 font-bold rounded-xl text-[11px] flex items-center justify-center gap-1.5 border border-neutral-700 transition active:scale-95"
+                  className="w-full py-2.5 bg-white hover:bg-slate-100 text-slate-800 font-black rounded-2xl text-sm flex items-center justify-center gap-2 border border-slate-300 transition active:scale-95 cursor-pointer shadow-sm"
                 >
-                  <RotateCcw className="w-3.5 h-3.5 text-amber-400" />
+                  <RotateCcw className="w-4 h-4 text-blue-600" />
                   <span>إعادة طباعة آخر إيصال</span>
                 </button>
 
                 <button
                   onClick={openCashDrawer}
-                  className="w-full py-1.5 bg-neutral-800 hover:bg-neutral-750 text-neutral-300 font-medium rounded-xl text-[11px] flex items-center justify-center gap-1.5 border border-neutral-700 transition active:scale-95"
+                  className="w-full py-2.5 bg-white hover:bg-slate-100 text-slate-800 font-black rounded-2xl text-sm flex items-center justify-center gap-2 border border-slate-300 transition active:scale-95 cursor-pointer shadow-sm"
                 >
-                  <Sparkles className="w-3.5 h-3.5 text-amber-400" />
-                  <span>اختبار نبضة درج النقود (Kick Drawer)</span>
+                  <Sparkles className="w-4 h-4 text-blue-600" />
+                  <span>اختبار نبضة درج النقود</span>
                 </button>
               </div>
             </div>
 
-            {/* Printable Area Calibration Selector (The Core Fix for 80Normal Clipping) */}
-            <div className="bg-neutral-950 p-4 rounded-2xl border border-neutral-800 space-y-3">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h4 className="font-bold text-sm text-amber-400 flex items-center gap-1.5">
-                    <Sliders className="w-4 h-4 text-amber-500" />
-                    <span>معايرة وضبط عرض منطقة الطباعة (Printable Area Calibration)</span>
-                  </h4>
-                  <p className="text-[11px] text-neutral-400">
-                    اختر العرض الأنسب لطابعتك لمنع قص المحتوى جهة اليسار الناتج عن إزاحة درايفر Windows.
-                  </p>
-                </div>
-              </div>
+            {/* Printable Area Calibration Selector */}
+            <div className="bg-slate-50 p-5 rounded-3xl border-2 border-slate-200 space-y-4 shadow-sm">
+              <h4 className="font-black text-base text-black flex items-center gap-2">
+                <Sliders className="w-5 h-5 text-blue-600" />
+                <span>معايرة وضبط عرض منطقة الطباعة (Printable Area Calibration)</span>
+              </h4>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                 {[
                   {
                     width: 70,
@@ -505,35 +510,35 @@ export const SettingsModal: React.FC = () => {
                         setPrinterProfile(updated);
                         printerService.saveProfile(updated);
                       }}
-                      className={`p-3 rounded-xl border cursor-pointer transition flex flex-col justify-between ${
+                      className={`p-4 rounded-2xl border-2 cursor-pointer transition flex flex-col justify-between ${
                         isSelected
-                          ? 'bg-amber-950/40 border-amber-500 shadow-md ring-1 ring-amber-400/40'
-                          : 'bg-neutral-900/80 border-neutral-800 hover:bg-neutral-900 hover:border-neutral-700'
+                          ? 'bg-blue-50 border-blue-600 shadow-md ring-2 ring-blue-300'
+                          : 'bg-white border-slate-200 hover:bg-slate-50'
                       }`}
                     >
                       <div>
-                        <div className="flex items-center justify-between mb-1">
+                        <div className="flex items-center justify-between mb-1.5">
                           <span
-                            className={`font-bold text-xs ${
-                              isSelected ? 'text-amber-300' : 'text-neutral-200'
+                            className={`font-black text-sm ${
+                              isSelected ? 'text-blue-900' : 'text-slate-900'
                             }`}
                           >
                             {opt.label}
                           </span>
                           {opt.isRecommended && (
-                            <span className="bg-amber-500 text-black px-1.5 py-0.5 rounded text-[9px] font-black">
-                              الحل الموصى به
+                            <span className="bg-blue-600 text-white px-2 py-0.5 rounded-lg text-xs font-black">
+                              الموصى به
                             </span>
                           )}
                         </div>
-                        <p className="text-[10px] text-neutral-400 leading-relaxed">{opt.desc}</p>
+                        <p className="text-xs text-slate-600 leading-relaxed font-semibold">{opt.desc}</p>
                       </div>
 
-                      <div className="mt-2 pt-1 border-t border-neutral-800/60 flex items-center justify-between text-[10px] font-mono">
-                        <span className="text-neutral-500">
+                      <div className="mt-3 pt-2 border-t border-slate-200 flex items-center justify-between text-xs">
+                        <span className="text-slate-500 font-bold">
                           Dots: {Math.round((opt.width / 25.4) * 203)} px
                         </span>
-                        <span className={isSelected ? 'text-amber-400 font-bold' : 'text-neutral-500'}>
+                        <span className={isSelected ? 'text-blue-700 font-black' : 'text-slate-500'}>
                           {isSelected ? '✓ مفعّل حالياً' : 'انقر للتفعيل'}
                         </span>
                       </div>
@@ -544,14 +549,14 @@ export const SettingsModal: React.FC = () => {
             </div>
 
             {/* Hardware Parameters: Feed Lines & Auto Cut */}
-            <div className="bg-neutral-950 p-4 rounded-2xl border border-neutral-800 space-y-3">
-              <h4 className="font-bold text-sm text-neutral-200">
+            <div className="bg-slate-50 p-5 rounded-3xl border-2 border-slate-200 space-y-4 shadow-sm">
+              <h4 className="font-black text-base text-black">
                 إعدادات تغذية الورق والقطع الآلي (Paper Feed & Cut)
               </h4>
 
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div>
-                  <label className="block text-neutral-400 mb-1">
+                  <label className="block text-slate-700 mb-1.5 font-bold">
                     عدد أسطر التغذية بعد الطباعة (Feed lines):
                   </label>
                   <select
@@ -561,7 +566,7 @@ export const SettingsModal: React.FC = () => {
                       setPrinterProfile(updated);
                       printerService.saveProfile(updated);
                     }}
-                    className="w-full bg-neutral-900 border border-neutral-700 rounded-lg p-2 text-neutral-100 font-mono font-bold"
+                    className="w-full bg-white border-2 border-slate-200 rounded-xl p-3 text-slate-900 font-black text-base"
                   >
                     {[1, 2, 3, 4, 5, 6, 7, 8].map((n) => (
                       <option key={n} value={n}>
@@ -569,13 +574,10 @@ export const SettingsModal: React.FC = () => {
                       </option>
                     ))}
                   </select>
-                  <span className="text-[10px] text-neutral-500 mt-0.5 block">
-                    يضمن خروج الإيصال بالكامل بعد سكين القطع التلقائي.
-                  </span>
                 </div>
 
                 <div className="flex flex-col justify-center">
-                  <label className="flex items-center gap-2 cursor-pointer bg-neutral-900 p-2.5 rounded-lg border border-neutral-800">
+                  <label className="flex items-center gap-3 cursor-pointer bg-white p-4 rounded-2xl border-2 border-slate-200">
                     <input
                       type="checkbox"
                       checked={printerProfile.cutPaper}
@@ -584,16 +586,16 @@ export const SettingsModal: React.FC = () => {
                         setPrinterProfile(updated);
                         printerService.saveProfile(updated);
                       }}
-                      className="accent-amber-500 w-4 h-4 rounded"
+                      className="accent-blue-600 w-5 h-5 rounded"
                     />
-                    <span className="text-neutral-200 font-semibold text-xs">
+                    <span className="text-slate-900 font-bold text-sm">
                       قطع الورق التلقائي بعد الطباعة (Auto Cut)
                     </span>
                   </label>
                 </div>
 
                 <div className="flex flex-col justify-center">
-                  <label className="flex items-center gap-2 cursor-pointer bg-neutral-900 p-2.5 rounded-lg border border-neutral-800">
+                  <label className="flex items-center gap-3 cursor-pointer bg-white p-4 rounded-2xl border-2 border-slate-200">
                     <input
                       type="checkbox"
                       checked={printerProfile.cashDrawer}
@@ -602,147 +604,14 @@ export const SettingsModal: React.FC = () => {
                         setPrinterProfile(updated);
                         printerService.saveProfile(updated);
                       }}
-                      className="accent-amber-500 w-4 h-4 rounded"
+                      className="accent-blue-600 w-5 h-5 rounded"
                     />
-                    <span className="text-neutral-200 font-semibold text-xs">
+                    <span className="text-slate-900 font-bold text-sm">
                       فتح درج النقود تلقائياً عند الدفع النقدي
                     </span>
                   </label>
                 </div>
               </div>
-            </div>
-
-            {/* Comprehensive Windows Driver & Troubleshooting Guide */}
-            <div className="bg-neutral-950 p-4 rounded-2xl border border-neutral-800 space-y-3">
-              <div
-                onClick={() => setShowTroubleshootDetails(!showTroubleshootDetails)}
-                className="flex items-center justify-between cursor-pointer"
-              >
-                <div className="flex items-center gap-2">
-                  <AlertTriangle className="w-4 h-4 text-amber-500" />
-                  <h4 className="font-bold text-sm text-neutral-100">
-                    دليل تشخيص وإصلاح مشكلة Driver 80Normal في Windows خطوة بخطوة
-                  </h4>
-                </div>
-                <ChevronDown
-                  className={`w-4 h-4 text-neutral-400 transition-transform ${
-                    showTroubleshootDetails ? 'rotate-180' : ''
-                  }`}
-                />
-              </div>
-
-              {showTroubleshootDetails && (
-                <div className="space-y-3 text-[11px] text-neutral-300 pt-2 border-t border-neutral-800/80 leading-relaxed">
-                  {/* Case 1: Windows Test Page */}
-                  <div className="bg-neutral-900/90 p-3 rounded-xl border border-neutral-800 space-y-1.5">
-                    <div className="font-bold text-amber-400 text-xs flex items-center gap-1.5">
-                      <span>1. لماذا تظهر صفحة اختبار Windows (Test Page) مقصوصة أفقيًا؟</span>
-                    </div>
-                    <p className="text-neutral-300">
-                      صفحة اختبار Windows تطبع مباشرة عبر محرك GDI الخاص بنظام Windows دون أي علاقة
-                      بالمتصفح. سبب القص هو أن درايفر <strong className="text-white">80Normal</strong>{' '}
-                      يكون افتراضياً مضبوطاً على مقاس صفحة <strong className="text-white">Letter</strong>{' '}
-                      أو <strong className="text-white">A4</strong> مع هوامش 20mm، أو أن العرض القابل
-                      للطباعة داخله محدد بـ 58mm (384 dots) بدلاً من 72mm (576 dots).
-                    </p>
-                  </div>
-
-                  {/* Case 2: Step-by-Step Fix in Windows */}
-                  <div className="bg-neutral-900/90 p-3 rounded-xl border border-neutral-800 space-y-2">
-                    <div className="font-bold text-amber-400 text-xs">
-                      2. خطوات ضبط إعدادات طابعة CAFETERIA في Windows 10/11:
-                    </div>
-                    <ol className="list-decimal list-inside space-y-1 text-neutral-300 pr-1">
-                      <li>
-                        افتح <strong className="text-white">Settings</strong> في Windows ثم انتقل إلى{' '}
-                        <strong className="text-white">Bluetooth & devices</strong> ثم{' '}
-                        <strong className="text-white">Printers & scanners</strong>.
-                      </li>
-                      <li>
-                        اختر الطابعة <strong className="text-white">CAFETERIA</strong> واضغط على{' '}
-                        <strong className="text-white">Printing Preferences</strong> (تفضيلات الطباعة).
-                      </li>
-                      <li>
-                        في علامة تبويب <strong className="text-white">Layout / Paper Quality</strong> أو{' '}
-                        <strong className="text-white">Advanced</strong>:
-                      </li>
-                      <ul className="list-disc list-inside pr-4 text-amber-300/90 space-y-0.5">
-                        <li>
-                          غيّر <strong className="text-white">Paper Size</strong> من Letter/A4 إلى:{' '}
-                          <strong className="text-white">80 x 297 mm</strong> أو{' '}
-                          <strong className="text-white">Receipt 80mm</strong>.
-                        </li>
-                        <li>
-                          إذا لم تجد هذا الخيار، أنشئ مقاساً مخصصاً (Custom Paper Size):{' '}
-                          <strong className="text-white">Width: 80 mm (أو 72 mm)</strong> و{' '}
-                          <strong className="text-white">Length: 297 mm</strong>.
-                        </li>
-                        <li>
-                          اضبط الهوامش (<strong className="text-white">Margins</strong>) على:{' '}
-                          <strong className="text-white">0 mm</strong> من جميع الجهات.
-                        </li>
-                      </ul>
-                      <li>
-                        اضغط <strong className="text-white">Apply</strong> ثم{' '}
-                        <strong className="text-white">OK</strong>، ثم أعد تجربة طباعة صفحة الاختبار.
-                      </li>
-                    </ol>
-                  </div>
-
-                  {/* Case 3: Driver Replacements */}
-                  <div className="bg-neutral-900/90 p-3 rounded-xl border border-neutral-800 space-y-1.5">
-                    <div className="font-bold text-amber-400 text-xs">
-                      3. التعريفات البديلة الموصى بها في حال استمرار المشكلة مع 80Normal:
-                    </div>
-                    <p className="text-neutral-300">
-                      بعض نسخ تعريف 80Normal الصينية تعاني من خلل داخلي في ملف PPD/GDI. يمكنك حل ذلك
-                      بتغيير التعريف إلى:
-                    </p>
-                    <ul className="list-disc list-inside space-y-1 pr-1 text-neutral-300">
-                      <li>
-                        <strong className="text-white">POS-80 Official Driver</strong> (مثل Xprinter XP-N160I /
-                        Rongta RP80 / Hoin 80mm).
-                      </li>
-                      <li>
-                        <strong className="text-white">Generic / Text Only</strong> (المدمج افتراضياً داخل
-                        نظام Windows) والذي يرسل أوامر ASCII و ESC/POS مباشرة للرأس بدون معالجة رسومية.
-                      </li>
-                      <li>
-                        <strong className="text-white">Epson TM-T20 Generic Receipt Driver</strong>: متوافق
-                        مع 99% من طابعات الـ 80mm الصينية.
-                      </li>
-                    </ul>
-                  </div>
-
-                  {/* Case 4: Raw Spooling Direct CMD */}
-                  <div className="bg-neutral-900/90 p-3 rounded-xl border border-neutral-800 space-y-2">
-                    <div className="flex items-center justify-between font-bold text-amber-400 text-xs">
-                      <div className="flex items-center gap-1.5">
-                        <Terminal className="w-3.5 h-3.5" />
-                        <span>4. أمر سطر الأوامر (Windows CMD) للطباعة المباشرة دون الحاجة لأي Driver:</span>
-                      </div>
-                      <button
-                        onClick={() => {
-                          navigator.clipboard.writeText(printerService.getWindowsSpoolCommand());
-                          setCopiedCmd(true);
-                          setTimeout(() => setCopiedCmd(false), 2000);
-                        }}
-                        className="bg-neutral-800 hover:bg-neutral-700 text-amber-300 px-2 py-0.5 rounded text-[10px] flex items-center gap-1"
-                      >
-                        {copiedCmd ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}
-                        <span>{copiedCmd ? 'تم النسخ!' : 'نسخ الأمر'}</span>
-                      </button>
-                    </div>
-                    <code className="block bg-black px-2.5 py-1.5 rounded-lg text-cyan-300 font-mono text-[10px] select-all border border-neutral-800">
-                      {printerService.getWindowsSpoolCommand()}
-                    </code>
-                    <p className="text-[10px] text-neutral-400">
-                      يقوم هذا الأمر بإرسال ملف الأوامر الخام ESC/POS (.prn) مباشرة إلى منفذ الطابعة
-                      المشتركة دون معالجة GDI من نظام Windows، مما يتجاوز أي عيوب في تعريف 80Normal.
-                    </p>
-                  </div>
-                </div>
-              )}
             </div>
           </div>
         )}
@@ -750,67 +619,67 @@ export const SettingsModal: React.FC = () => {
 
       {/* Add Staff Modal */}
       {showAddStaffModal && (
-        <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-sm flex items-center justify-center p-3">
-          <div className="bg-neutral-900 border border-neutral-700 rounded-3xl max-w-sm w-full p-4 shadow-2xl space-y-3">
-            <div className="flex items-center justify-between border-b border-neutral-800 pb-2">
-              <h3 className="font-bold text-sm text-amber-400">إضافة موظف جديد</h3>
-              <button onClick={() => setShowAddStaffModal(false)} className="p-1 rounded bg-neutral-800 text-neutral-400">
-                <X className="w-4 h-4" />
+        <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white border-2 border-slate-200 rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-4 text-slate-900">
+            <div className="flex items-center justify-between border-b-2 border-slate-200 pb-3">
+              <h3 className="font-black text-2xl text-black">إضافة موظف جديد</h3>
+              <button onClick={() => setShowAddStaffModal(false)} className="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600">
+                <X className="w-6 h-6" />
               </button>
             </div>
 
-            <div className="space-y-2 text-xs">
+            <div className="space-y-3 font-bold text-sm">
               <div>
-                <label className="block text-neutral-400 mb-1">الاسم الكامل *</label>
+                <label className="block text-slate-700 mb-1">الاسم الكامل *</label>
                 <input
                   type="text"
                   value={newFullName}
                   onChange={(e) => setNewFullName(e.target.value)}
                   placeholder="محمد قادري"
-                  className="w-full bg-neutral-950 border border-neutral-700 rounded-lg p-2 text-neutral-100"
+                  className="w-full bg-slate-50 border-2 border-slate-200 rounded-xl p-3 text-slate-900 font-black text-base focus:outline-none focus:border-blue-600"
                 />
               </div>
 
               <div>
-                <label className="block text-neutral-400 mb-1">اسم المستخدم للدخول *</label>
+                <label className="block text-slate-700 mb-1">اسم المستخدم للدخول *</label>
                 <input
                   type="text"
                   value={newUsername}
                   onChange={(e) => setNewUsername(e.target.value)}
                   placeholder="caissier2"
-                  className="w-full bg-neutral-950 border border-neutral-700 rounded-lg p-2 text-neutral-100 font-mono"
+                  className="w-full bg-slate-50 border-2 border-slate-200 rounded-xl p-3 text-slate-900 font-mono text-base focus:outline-none focus:border-blue-600"
                 />
               </div>
 
               <div>
-                <label className="block text-neutral-400 mb-1">كلمة المرور *</label>
+                <label className="block text-slate-700 mb-1">كلمة المرور *</label>
                 <input
                   type="password"
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
-                  className="w-full bg-neutral-950 border border-neutral-700 rounded-lg p-2 text-neutral-100 font-mono"
+                  className="w-full bg-slate-50 border-2 border-slate-200 rounded-xl p-3 text-slate-900 font-mono text-base focus:outline-none focus:border-blue-600"
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-neutral-400 mb-1">رمز PIN السريع</label>
+                  <label className="block text-slate-700 mb-1">رمز PIN السريع</label>
                   <input
                     type="text"
                     maxLength={4}
                     value={newPin}
                     onChange={(e) => setNewPin(e.target.value)}
                     placeholder="1111"
-                    className="w-full bg-neutral-950 border border-neutral-700 rounded-lg p-2 text-neutral-100 font-mono text-center font-bold text-base text-amber-400"
+                    className="w-full bg-slate-50 border-2 border-slate-200 rounded-xl p-3 text-blue-700 font-mono text-center font-black text-xl"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-neutral-400 mb-1">الدور (Role)</label>
+                  <label className="block text-slate-700 mb-1">الدور (Role)</label>
                   <select
                     value={newRole}
                     onChange={(e) => setNewRole(e.target.value)}
-                    className="w-full bg-neutral-950 border border-neutral-700 rounded-lg p-2 text-neutral-100 font-bold"
+                    className="w-full bg-slate-50 border-2 border-slate-200 rounded-xl p-3 text-slate-900 font-black text-base"
                   >
                     <option value="CASHIER">كاشير (CASHIER)</option>
                     <option value="WAITER">نادل (WAITER)</option>
@@ -825,7 +694,7 @@ export const SettingsModal: React.FC = () => {
 
             <button
               onClick={handleCreateStaff}
-              className="w-full py-2 bg-amber-500 hover:bg-amber-400 text-black font-bold text-xs rounded-xl active:scale-95 transition"
+              className="w-full py-4 bg-blue-600 hover:bg-blue-700 text-white font-black text-xl rounded-2xl active:scale-95 transition shadow-xl cursor-pointer"
             >
               حفظ الموظف
             </button>

@@ -187,34 +187,78 @@
 }
 
 :root {
-  color-scheme: dark;
+  color-scheme: light;
   --receipt-printable-width: 72mm;
   --receipt-margins: 0mm;
-  --tw-grayscale: 0;
-  --tw-contrast: 1;
-  --tw-brightness: 1;
+  --tw-grayscale: 0 !important;
+  --tw-contrast: 1 !important;
+  --tw-brightness: 1 !important;
 }
 
-/* Ensure no unintended browser/extension grayscale or filter effect */
-html, body {
-  filter: none !important;
+/* Ensure no unintended browser/extension grayscale or filter effect on any element */
+html, body, #root, * {
   -webkit-filter: none !important;
-}
-
-/* Safe drop-shadow fallback for older Chromium */
-.drop-shadow {
   filter: none !important;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.7);
 }
 
-/* Safe modal backdrop fallback without GPU artifacts */
+/* ============================================================== */
+/* ROYAL BLUE & CLEAN WHITE PALETTE (EXPLICIT UNIVERSAL FALLBACKS) */
+/* ============================================================== */
+
+/* White and light backgrounds */
+.bg-white { background-color: #ffffff !important; }
+.bg-slate-50 { background-color: #f8fafc !important; }
+.bg-slate-100 { background-color: #f1f5f9 !important; }
+.bg-slate-200 { background-color: #e2e8f0 !important; }
+.bg-blue-50 { background-color: #eff6ff !important; }
+.bg-blue-100 { background-color: #dbeafe !important; }
+
+/* Black / Dark Sidebar & Headers */
+.bg-black { background-color: #000000 !important; }
+.bg-slate-950 { background-color: #020617 !important; }
+.bg-slate-900 { background-color: #0f172a !important; }
+.bg-slate-850 { background-color: #172033 !important; }
+.bg-slate-800 { background-color: #1e293b !important; }
+
+/* Royal Blue Primary Actions */
+.bg-blue-600 { background-color: #2563eb !important; }
+.bg-blue-700 { background-color: #1d4ed8 !important; }
+.bg-blue-800 { background-color: #1e40af !important; }
+.hover\:bg-blue-700:hover { background-color: #1d4ed8 !important; }
+.hover\:bg-blue-600:hover { background-color: #2563eb !important; }
+.hover\:bg-blue-500:hover { background-color: #3b82f6 !important; }
+
+/* Text colors */
+.text-white { color: #ffffff !important; }
+.text-black { color: #000000 !important; }
+.text-slate-900 { color: #0f172a !important; }
+.text-slate-800 { color: #1e293b !important; }
+.text-slate-700 { color: #334155 !important; }
+.text-slate-600 { color: #475569 !important; }
+.text-slate-500 { color: #64748b !important; }
+.text-blue-600 { color: #2563eb !important; }
+.text-blue-700 { color: #1d4ed8 !important; }
+.text-blue-800 { color: #1e40af !important; }
+.text-emerald-700 { color: #047857 !important; }
+.text-red-600 { color: #dc2626 !important; }
+
+/* Borders & Dividers */
+.border-slate-200 { border-color: #e2e8f0 !important; }
+.border-slate-300 { border-color: #cbd5e1 !important; }
+.border-blue-200 { border-color: #bfdbfe !important; }
+.border-blue-600 { border-color: #2563eb !important; }
+.border-slate-800 { border-color: #1e293b !important; }
+
+/* Safe modal backdrop */
 .backdrop-blur-sm {
-  background-color: rgba(0, 0, 0, 0.88);
+  background-color: rgba(15, 23, 42, 0.75) !important;
 }
 
 @layer base {
   body {
-    font-family: 'Cairo', system-ui, -apple-system, sans-serif;
+    font-family: 'Cairo', 'Tajawal', system-ui, -apple-system, sans-serif;
+    color: #0f172a;
+    background-color: #ffffff;
   }
 }
 

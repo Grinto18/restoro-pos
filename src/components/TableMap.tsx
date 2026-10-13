@@ -92,35 +92,35 @@ export const TableMap: React.FC<TableMapProps> = ({ onSelectTableForOrder }) => 
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'OCCUPIED':
-        return <span className="bg-red-500/20 text-red-400 border border-red-500/30 px-2 py-0.5 rounded text-[10px] font-bold">مشغولة</span>;
+        return <span className="bg-red-100 text-red-700 border border-red-300 px-2.5 py-1 rounded-xl text-xs font-black">مشغولة</span>;
       case 'RESERVED':
-        return <span className="bg-sky-500/20 text-sky-400 border border-sky-500/30 px-2 py-0.5 rounded text-[10px] font-bold">محجوزة</span>;
+        return <span className="bg-blue-100 text-blue-800 border border-blue-300 px-2.5 py-1 rounded-xl text-xs font-black">محجوزة</span>;
       case 'CLEANING':
-        return <span className="bg-yellow-500/20 text-yellow-400 border border-yellow-500/30 px-2 py-0.5 rounded text-[10px] font-bold">تنظيف</span>;
+        return <span className="bg-slate-200 text-slate-800 border border-slate-300 px-2.5 py-1 rounded-xl text-xs font-black">تنظيف</span>;
       default:
-        return <span className="bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-2 py-0.5 rounded text-[10px] font-bold">متاحة</span>;
+        return <span className="bg-emerald-100 text-emerald-800 border border-emerald-300 px-2.5 py-1 rounded-xl text-xs font-black">متاحة</span>;
     }
   };
 
   return (
-    <div className="flex-1 flex flex-col h-[calc(100vh-84px)] overflow-hidden bg-neutral-950 p-4 select-none">
+    <div className="flex-1 flex flex-col h-[calc(100vh-84px)] overflow-hidden bg-slate-50 p-5 select-none text-slate-900">
       {/* Top Controls: Zones & Actions */}
-      <div className="flex items-center justify-between gap-3 bg-neutral-900 p-3 rounded-2xl border border-neutral-800 shrink-0">
-        <div className="flex items-center gap-2">
-          <div className="font-bold text-sm text-amber-400 flex items-center gap-1.5 pl-2 border-l border-neutral-800">
-            <Grid className="w-5 h-5 text-amber-500" />
+      <div className="flex items-center justify-between gap-4 bg-white p-4 rounded-3xl border-2 border-slate-200 shadow-sm shrink-0">
+        <div className="flex items-center gap-3">
+          <div className="font-black text-xl text-black flex items-center gap-2 pl-3 border-l-2 border-slate-200">
+            <Grid className="w-6 h-6 text-blue-600" />
             <span>خريطة الصالة (Plan de Salle)</span>
           </div>
 
-          <div className="flex items-center gap-1 overflow-x-auto no-scrollbar">
+          <div className="flex items-center gap-2 overflow-x-auto no-scrollbar">
             {zones.map((z) => (
               <button
                 key={z}
                 onClick={() => setActiveZone(z)}
-                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition active:scale-95 ${
+                className={`px-4 py-2.5 rounded-xl text-sm font-black transition active:scale-95 cursor-pointer ${
                   activeZone === z
-                    ? 'bg-amber-500 text-black shadow'
-                    : 'bg-neutral-800 hover:bg-neutral-700 text-neutral-300'
+                    ? 'bg-blue-600 text-white shadow-md'
+                    : 'bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-300'
                 }`}
               >
                 {z === 'ALL' ? 'جميع المناطق' : z}
@@ -129,64 +129,64 @@ export const TableMap: React.FC<TableMapProps> = ({ onSelectTableForOrder }) => 
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2.5">
           <button
             onClick={() => setShowAddTableModal(true)}
-            className="flex items-center gap-1.5 bg-neutral-800 hover:bg-neutral-700 text-amber-300 px-3 py-1.5 rounded-xl border border-neutral-700 text-xs font-bold transition active:scale-95"
+            className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-2xl text-sm font-black transition active:scale-95 shadow cursor-pointer"
           >
-            <Plus className="w-4 h-4" />
+            <Plus className="w-5 h-5 stroke-[3]" />
             <span>إضافة طاولة</span>
           </button>
 
           <button
             onClick={loadTables}
-            className="p-2 rounded-xl bg-neutral-800 hover:bg-neutral-700 text-neutral-300 transition active:scale-95"
+            className="p-2.5 rounded-2xl bg-slate-100 hover:bg-slate-200 border border-slate-300 text-slate-700 transition active:scale-95 cursor-pointer"
             title="تحديث"
           >
-            <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
+            <RefreshCw className={`w-5 h-5 ${isLoading ? 'animate-spin text-blue-600' : ''}`} />
           </button>
         </div>
       </div>
 
-      {/* Tables Grid */}
+      {/* Tables Grid (Large Cards with 28-32px table labels) */}
       <div className="flex-1 overflow-y-auto no-scrollbar pt-4">
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 pb-6">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 pb-6">
           {filteredTables.map((table) => {
             const isOccupied = table.status === 'OCCUPIED';
             return (
               <div
                 key={table.id}
                 onClick={() => handleTableClick(table)}
-                className={`p-4 rounded-2xl border flex flex-col justify-between h-40 transition-all cursor-pointer relative shadow-lg active:scale-[0.98] ${
+                className={`p-5 rounded-3xl border-2 flex flex-col justify-between h-44 transition-all cursor-pointer relative shadow-sm hover:shadow-md active:scale-[0.98] ${
                   isOccupied
-                    ? 'bg-gradient-to-b from-red-950/70 to-neutral-900 border-red-700/60 hover:border-red-500'
+                    ? 'bg-red-50/70 border-red-300 hover:border-red-500'
                     : table.status === 'RESERVED'
-                    ? 'bg-gradient-to-b from-sky-950/70 to-neutral-900 border-sky-700/60 hover:border-sky-500'
-                    : 'bg-gradient-to-b from-neutral-900 to-neutral-900/90 border-neutral-800 hover:border-amber-500/60'
+                    ? 'bg-blue-50/70 border-blue-300 hover:border-blue-500'
+                    : 'bg-white border-slate-200 hover:border-blue-500 hover:bg-blue-50/30'
                 }`}
               >
                 <div className="flex items-start justify-between">
-                  <span className="font-mono text-2xl font-black text-neutral-100">
+                  <span className="text-3xl font-black text-black">
                     {table.tableNumber}
                   </span>
                   {getStatusBadge(table.status)}
                 </div>
 
                 <div>
-                  <div className="text-xs text-neutral-400 font-semibold">{table.zone}</div>
-                  <div className="text-[11px] text-neutral-500 flex items-center gap-1 mt-0.5">
-                    <Users className="w-3.5 h-3.5" />
+                  <div className="text-sm text-slate-600 font-extrabold">{table.zone}</div>
+                  <div className="text-xs text-slate-500 flex items-center gap-1.5 mt-1 font-bold">
+                    <Users className="w-4 h-4 text-slate-400" />
                     <span>{table.capacity} مقاعد</span>
                   </div>
                 </div>
 
-                <div className="flex items-center justify-between pt-2 border-t border-neutral-800/80">
+                <div className="flex items-center justify-between pt-2.5 border-t border-slate-200">
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
                       handleTableClick(table);
                     }}
-                    className="text-xs text-amber-400 font-bold hover:underline"
+                    className="text-sm text-blue-700 font-black hover:underline"
                   >
                     {isOccupied ? 'فتح الطلب' : '+ طلب جديد'}
                   </button>
@@ -197,10 +197,10 @@ export const TableMap: React.FC<TableMapProps> = ({ onSelectTableForOrder }) => 
                         e.stopPropagation();
                         setTransferFromTable(table);
                       }}
-                      className="text-[10px] bg-neutral-800 hover:bg-neutral-700 text-neutral-300 px-2 py-1 rounded border border-neutral-700 flex items-center gap-1"
+                      className="text-xs bg-white hover:bg-slate-100 text-slate-800 px-3 py-1.5 rounded-xl border border-slate-300 flex items-center gap-1 font-black shadow-sm"
                       title="نقل الطلب لطاولة أخرى"
                     >
-                      <MoveRight className="w-3 h-3" />
+                      <MoveRight className="w-3.5 h-3.5 text-blue-600" />
                       <span>نقل</span>
                     </button>
                   )}
@@ -213,26 +213,26 @@ export const TableMap: React.FC<TableMapProps> = ({ onSelectTableForOrder }) => 
 
       {/* Transfer Table Modal */}
       {transferFromTable && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-neutral-900 border border-neutral-700 rounded-2xl max-w-sm w-full p-4 shadow-2xl space-y-3">
-            <div className="flex items-center justify-between border-b border-neutral-800 pb-2">
-              <h3 className="font-bold text-sm text-cyan-400">
+        <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white border-2 border-slate-200 rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-4 text-slate-900">
+            <div className="flex items-center justify-between border-b-2 border-slate-200 pb-3">
+              <h3 className="font-black text-xl text-black">
                 نقل الطلب من الطاولة {transferFromTable.tableNumber}
               </h3>
               <button
                 onClick={() => setTransferFromTable(null)}
-                className="p-1 rounded bg-neutral-800 text-neutral-400"
+                className="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600"
               >
-                <X className="w-4 h-4" />
+                <X className="w-5 h-5" />
               </button>
             </div>
 
             <div>
-              <label className="block text-xs text-neutral-400 mb-1">اختر الطاولة الهدف:</label>
+              <label className="block text-sm font-bold text-slate-700 mb-1.5">اختر الطاولة الهدف:</label>
               <select
                 value={transferToTableId || ''}
                 onChange={(e) => setTransferToTableId(Number(e.target.value))}
-                className="w-full bg-neutral-950 border border-neutral-700 rounded-lg p-2 text-neutral-100 text-sm font-bold"
+                className="w-full bg-slate-50 border-2 border-slate-200 rounded-xl p-3 text-slate-900 text-base font-black focus:outline-none focus:border-blue-600"
               >
                 <option value="">-- اختر طاولة شاغرة --</option>
                 {tables
@@ -248,7 +248,7 @@ export const TableMap: React.FC<TableMapProps> = ({ onSelectTableForOrder }) => 
             <button
               onClick={handleExecuteTransfer}
               disabled={!transferToTableId}
-              className="w-full py-2 bg-cyan-600 hover:bg-cyan-500 disabled:opacity-40 text-black font-bold text-xs rounded-lg active:scale-95 transition"
+              className="w-full py-3.5 bg-blue-600 hover:bg-blue-700 disabled:opacity-40 text-white font-black text-lg rounded-xl active:scale-95 transition shadow-lg cursor-pointer"
             >
               تأكيد نقل الطلب
             </button>
@@ -258,56 +258,56 @@ export const TableMap: React.FC<TableMapProps> = ({ onSelectTableForOrder }) => 
 
       {/* Add Table Modal */}
       {showAddTableModal && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-neutral-900 border border-neutral-700 rounded-2xl max-w-sm w-full p-4 shadow-2xl space-y-3">
-            <div className="flex items-center justify-between border-b border-neutral-800 pb-2">
-              <h3 className="font-bold text-sm text-amber-400">إضافة طاولة جديدة</h3>
+        <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white border-2 border-slate-200 rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-4 text-slate-900">
+            <div className="flex items-center justify-between border-b-2 border-slate-200 pb-3">
+              <h3 className="font-black text-2xl text-black">إضافة طاولة جديدة</h3>
               <button
                 onClick={() => setShowAddTableModal(false)}
-                className="p-1 rounded bg-neutral-800 text-neutral-400"
+                className="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600"
               >
-                <X className="w-4 h-4" />
+                <X className="w-5 h-5" />
               </button>
             </div>
 
-            <div className="space-y-2 text-xs">
+            <div className="space-y-3">
               <div>
-                <label className="block text-neutral-400 mb-1">رقم أو اسم الطاولة:</label>
+                <label className="block text-sm font-bold text-slate-700 mb-1">رقم أو اسم الطاولة:</label>
                 <input
                   type="text"
                   value={newTableNum}
                   onChange={(e) => setNewTableNum(e.target.value)}
                   placeholder="مثال: T21 أو VIP3"
-                  className="w-full bg-neutral-950 border border-neutral-700 rounded-lg p-2 text-neutral-100 font-mono"
+                  className="w-full bg-slate-50 border-2 border-slate-200 rounded-xl p-3 text-slate-900 text-lg font-black focus:outline-none focus:border-blue-600"
                 />
               </div>
 
               <div>
-                <label className="block text-neutral-400 mb-1">المنطقة:</label>
+                <label className="block text-sm font-bold text-slate-700 mb-1">المنطقة:</label>
                 <input
                   type="text"
                   value={newTableZone}
                   onChange={(e) => setNewTableZone(e.target.value)}
                   placeholder="الصالة الرئيسية، الشرفة..."
-                  className="w-full bg-neutral-950 border border-neutral-700 rounded-lg p-2 text-neutral-100"
+                  className="w-full bg-slate-50 border-2 border-slate-200 rounded-xl p-3 text-slate-900 font-bold text-base focus:outline-none focus:border-blue-600"
                 />
               </div>
 
               <div>
-                <label className="block text-neutral-400 mb-1">السعة (عدد المقاعد):</label>
+                <label className="block text-sm font-bold text-slate-700 mb-1">السعة (عدد المقاعد):</label>
                 <input
                   type="number"
                   min="1"
                   value={newTableCapacity}
                   onChange={(e) => setNewTableCapacity(parseInt(e.target.value) || 4)}
-                  className="w-full bg-neutral-950 border border-neutral-700 rounded-lg p-2 text-neutral-100 font-mono"
+                  className="w-full bg-slate-50 border-2 border-slate-200 rounded-xl p-3 text-slate-900 text-lg font-black focus:outline-none focus:border-blue-600"
                 />
               </div>
             </div>
 
             <button
               onClick={handleAddTable}
-              className="w-full py-2 bg-amber-500 hover:bg-amber-400 text-black font-bold text-xs rounded-lg active:scale-95 transition"
+              className="w-full py-4 bg-blue-600 hover:bg-blue-700 text-white font-black text-xl rounded-2xl active:scale-95 transition shadow-xl cursor-pointer"
             >
               حفظ الطاولة
             </button>

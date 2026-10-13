@@ -101,9 +101,34 @@ export const MenuManagement: React.FC = () => {
 
     try {
       if (isNewProduct) {
-        await api.createProduct(editingProduct);
+        await api.createProduct({
+          nameAr: editingProduct.nameAr,
+          nameFr: editingProduct.nameFr,
+          price: parseFloat(editingProduct.price) || 0,
+          costPrice: parseFloat(editingProduct.costPrice) || 0,
+          categoryId: Number(editingProduct.categoryId),
+          station: editingProduct.station || 'MAIN_KITCHEN',
+          barcode: editingProduct.barcode || undefined,
+          isAvailable: editingProduct.isAvailable ?? true,
+          variants: editingProduct.variants,
+          addons: editingProduct.addons,
+          recipes: editingProduct.recipes,
+        });
       } else {
-        await api.updateProduct(editingProduct.id, editingProduct);
+        await api.updateProduct(editingProduct.id, {
+          nameAr: editingProduct.nameAr,
+          nameFr: editingProduct.nameFr,
+          price: parseFloat(editingProduct.price) || 0,
+          costPrice: parseFloat(editingProduct.costPrice) || 0,
+          categoryId: Number(editingProduct.categoryId),
+          station: editingProduct.station || 'MAIN_KITCHEN',
+          barcode: editingProduct.barcode || undefined,
+          isAvailable: editingProduct.isAvailable,
+          reasonForPriceChange: editingProduct.reasonForPriceChange,
+          variants: editingProduct.variants,
+          addons: editingProduct.addons,
+          recipes: editingProduct.recipes,
+        });
       }
       setEditingProduct(null);
       await loadAll();
@@ -117,7 +142,7 @@ export const MenuManagement: React.FC = () => {
     try {
       await api.createCategory({
         nameAr: catNameAr.trim(),
-        nameFr: catNameFr.trim() || null,
+        nameFr: catNameFr.trim() || undefined,
         station: catStation,
       });
       setShowCatModal(false);
@@ -125,48 +150,48 @@ export const MenuManagement: React.FC = () => {
       setCatNameFr('');
       await loadAll();
     } catch (err: any) {
-      alert(err.message || 'فشل إضافة الفئة');
+      alert(err.message || 'فشل حفظ الفئة');
     }
   };
 
   const filteredProducts = products.filter((p) => {
-    const matchesCat = selectedCatId === 'ALL' || p.categoryId === selectedCatId;
-    const matchesSearch =
-      search === '' ||
+    const matchCat = selectedCatId === 'ALL' || p.categoryId === selectedCatId;
+    const matchSearch =
+      !search ||
       p.nameAr.toLowerCase().includes(search.toLowerCase()) ||
       (p.nameFr && p.nameFr.toLowerCase().includes(search.toLowerCase())) ||
       (p.barcode && p.barcode.includes(search));
-    return matchesCat && matchesSearch;
+    return matchCat && matchSearch;
   });
 
   return (
-    <div className="flex-1 flex flex-col h-[calc(100vh-84px)] overflow-hidden bg-neutral-950 p-4 select-none">
-      {/* Top Header */}
-      <div className="flex items-center justify-between gap-3 bg-neutral-900 p-3 rounded-2xl border border-neutral-800 shrink-0">
-        <div className="flex items-center gap-2">
-          <div className="font-bold text-sm text-amber-400 flex items-center gap-1.5 pl-3 border-l border-neutral-800">
-            <UtensilsCrossed className="w-5 h-5 text-amber-500" />
-            <span>إدارة قائمة الطعام والأسعار</span>
+    <div className="flex-1 flex flex-col h-[calc(100vh-84px)] overflow-hidden bg-slate-50 p-5 select-none text-slate-900">
+      {/* Top Header & Actions */}
+      <div className="flex items-center justify-between gap-4 bg-white p-4 rounded-3xl border-2 border-slate-200 shadow-sm shrink-0">
+        <div className="flex items-center gap-3">
+          <div className="font-black text-xl text-black flex items-center gap-2 pl-3 border-l-2 border-slate-200">
+            <UtensilsCrossed className="w-6 h-6 text-blue-600" />
+            <span>قائمة الأطباق والأسعار (Menu & Plats)</span>
           </div>
 
           <div className="relative">
-            <Search className="w-3.5 h-3.5 text-neutral-400 absolute right-2.5 top-2.5" />
+            <Search className="w-4 h-4 text-slate-400 absolute right-3 top-3" />
             <input
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="بحث في القائمة..."
-              className="bg-neutral-950 border border-neutral-700 rounded-lg pr-8 pl-3 py-1.5 text-xs text-neutral-100 placeholder-neutral-500 focus:outline-none focus:border-amber-500"
+              className="bg-slate-50 border-2 border-slate-200 rounded-xl pr-9 pl-4 py-2 text-sm font-bold text-slate-900 placeholder-slate-400 focus:outline-none focus:border-blue-600 focus:bg-white"
             />
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
           <button
             onClick={() => setShowCatModal(true)}
-            className="bg-neutral-800 hover:bg-neutral-700 text-neutral-200 px-3 py-1.5 rounded-xl border border-neutral-700 text-xs font-bold transition flex items-center gap-1.5"
+            className="bg-slate-100 hover:bg-slate-200 text-slate-800 px-4 py-2.5 rounded-2xl border-2 border-slate-300 text-sm font-black transition flex items-center gap-2 cursor-pointer shadow-sm"
           >
-            <Plus className="w-3.5 h-3.5" />
+            <Plus className="w-4 h-4 text-blue-600 stroke-[3]" />
             <span>فئة جديدة</span>
           </button>
 
@@ -187,25 +212,25 @@ export const MenuManagement: React.FC = () => {
                 recipes: [],
               });
             }}
-            className="bg-amber-500 hover:bg-amber-400 text-black px-3.5 py-1.5 rounded-xl text-xs font-bold shadow-md transition flex items-center gap-1.5"
+            className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-2xl text-sm font-black shadow-lg transition flex items-center gap-2 cursor-pointer"
           >
-            <Plus className="w-4 h-4" />
+            <Plus className="w-5 h-5 stroke-[3]" />
             <span>طبق جديد (Nouveau Plat)</span>
           </button>
         </div>
       </div>
 
       {/* Main Content Area */}
-      <div className="flex-1 flex gap-3 pt-3 overflow-hidden">
+      <div className="flex-1 flex gap-4 pt-4 overflow-hidden">
         {/* Categories Sidebar */}
-        <div className="w-56 bg-neutral-900 rounded-2xl border border-neutral-800 p-2 overflow-y-auto no-scrollbar shrink-0">
-          <div className="font-bold text-xs text-neutral-400 px-2 py-1.5">الفئات (Catégories)</div>
+        <div className="w-64 bg-white rounded-3xl border-2 border-slate-200 p-3 overflow-y-auto no-scrollbar shrink-0 shadow-sm">
+          <div className="font-black text-sm text-black px-3 py-2 border-b border-slate-100 mb-2">الفئات (Catégories)</div>
           <button
             onClick={() => setSelectedCatId('ALL')}
-            className={`w-full text-right px-3 py-2 rounded-xl text-xs font-bold transition mb-1 ${
+            className={`w-full text-right px-4 py-3 rounded-2xl text-sm font-black transition mb-1.5 cursor-pointer ${
               selectedCatId === 'ALL'
-                ? 'bg-amber-500 text-black shadow'
-                : 'text-neutral-300 hover:bg-neutral-800'
+                ? 'bg-blue-600 text-white shadow-md'
+                : 'text-slate-800 hover:bg-slate-100'
             }`}
           >
             جميع الأصناف ({products.length})
@@ -215,14 +240,14 @@ export const MenuManagement: React.FC = () => {
             <button
               key={c.id}
               onClick={() => setSelectedCatId(c.id)}
-              className={`w-full text-right px-3 py-2 rounded-xl text-xs font-bold transition mb-1 flex items-center justify-between ${
+              className={`w-full text-right px-4 py-3 rounded-2xl text-sm font-black transition mb-1.5 flex items-center justify-between cursor-pointer ${
                 selectedCatId === c.id
-                  ? 'bg-amber-500 text-black shadow'
-                  : 'text-neutral-300 hover:bg-neutral-800'
+                  ? 'bg-blue-600 text-white shadow-md'
+                  : 'text-slate-800 hover:bg-slate-100'
               }`}
             >
               <span>{c.nameAr}</span>
-              <span className="text-[10px] opacity-75 font-mono">
+              <span className={`text-xs font-mono font-bold px-2 py-0.5 rounded-lg ${selectedCatId === c.id ? 'bg-blue-700 text-white' : 'bg-slate-100 text-slate-600'}`}>
                 {products.filter((p) => p.categoryId === c.id).length}
               </span>
             </button>
@@ -230,80 +255,80 @@ export const MenuManagement: React.FC = () => {
         </div>
 
         {/* Products Table */}
-        <div className="flex-1 bg-neutral-900 rounded-2xl border border-neutral-800 overflow-hidden flex flex-col">
+        <div className="flex-1 bg-white rounded-3xl border-2 border-slate-200 overflow-hidden flex flex-col shadow-sm">
           <div className="overflow-x-auto flex-1 no-scrollbar">
-            <table className="w-full text-right text-xs">
-              <thead className="bg-neutral-950 text-neutral-400 border-b border-neutral-800 font-bold">
+            <table className="w-full text-right text-sm">
+              <thead className="bg-slate-100 text-slate-800 border-b-2 border-slate-200 font-black">
                 <tr>
-                  <th className="p-3">الطبق</th>
-                  <th className="p-3">الفئة</th>
-                  <th className="p-3">سعر البيع (DA)</th>
-                  <th className="p-3">التكلفة (DA)</th>
-                  <th className="p-3">المحطة</th>
-                  <th className="p-3">الحالة</th>
-                  <th className="p-3 text-center">إجراءات</th>
+                  <th className="p-4">الطبق</th>
+                  <th className="p-4">الفئة</th>
+                  <th className="p-4">سعر البيع (DA)</th>
+                  <th className="p-4">التكلفة (DA)</th>
+                  <th className="p-4">المحطة</th>
+                  <th className="p-4">الحالة</th>
+                  <th className="p-4 text-center">إجراءات</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-neutral-800/60 font-medium">
+              <tbody className="divide-y divide-slate-200 font-bold">
                 {filteredProducts.map((p) => (
-                  <tr key={p.id} className="hover:bg-neutral-800/50 transition">
-                    <td className="p-3">
-                      <div className="font-bold text-sm text-neutral-100">{p.nameAr}</div>
-                      {p.nameFr && <div className="text-[11px] text-neutral-400">{p.nameFr}</div>}
-                      {p.barcode && <div className="text-[10px] text-neutral-500 font-mono">#{p.barcode}</div>}
+                  <tr key={p.id} className="hover:bg-blue-50/40 transition">
+                    <td className="p-4">
+                      <div className="font-black text-lg text-slate-900">{p.nameAr}</div>
+                      {p.nameFr && <div className="text-xs text-slate-500 font-semibold">{p.nameFr}</div>}
+                      {p.barcode && <div className="text-xs text-slate-400 font-mono">#{p.barcode}</div>}
                     </td>
-                    <td className="p-3 text-neutral-300">
+                    <td className="p-4 text-slate-700 font-extrabold">
                       {categories.find((c) => c.id === p.categoryId)?.nameAr || '—'}
                     </td>
-                    <td className="p-3 font-mono font-bold text-amber-400 text-sm">
+                    <td className="p-4 font-black text-blue-700 text-xl">
                       {Number(p.price).toLocaleString()} DA
                     </td>
-                    <td className="p-3 font-mono text-neutral-400">
+                    <td className="p-4 font-mono text-slate-600">
                       {Number(p.costPrice || 0).toLocaleString()} DA
                     </td>
-                    <td className="p-3">
-                      <span className="text-[10px] bg-neutral-800 text-neutral-300 px-2 py-0.5 rounded border border-neutral-700">
+                    <td className="p-4">
+                      <span className="text-xs bg-slate-100 text-slate-800 px-2.5 py-1 rounded-lg border border-slate-200 font-bold">
                         {p.station}
                       </span>
                     </td>
-                    <td className="p-3">
+                    <td className="p-4">
                       <button
                         onClick={() => handleToggleAvailable(p.id)}
-                        className={`px-2 py-1 rounded text-[10px] font-bold transition flex items-center gap-1 ${
+                        className={`px-3 py-1.5 rounded-xl text-xs font-black transition flex items-center gap-1.5 cursor-pointer ${
                           p.isAvailable
-                            ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
-                            : 'bg-red-500/20 text-red-400 border border-red-500/30'
+                            ? 'bg-emerald-100 text-emerald-800 border border-emerald-300'
+                            : 'bg-red-100 text-red-800 border border-red-300'
                         }`}
                       >
-                        {p.isAvailable ? <Eye className="w-3 h-3" /> : <EyeOff className="w-3 h-3" />}
+                        {p.isAvailable ? <Eye className="w-3.5 h-3.5" /> : <EyeOff className="w-3.5 h-3.5" />}
                         <span>{p.isAvailable ? 'متوفر' : 'غير متوفر'}</span>
                       </button>
                     </td>
-                    <td className="p-3 text-center">
-                      <div className="flex items-center justify-center gap-1.5">
+                    <td className="p-4 text-center">
+                      <div className="flex items-center justify-center gap-2">
                         <button
                           onClick={() => handleViewPriceHistory(p)}
-                          className="p-1.5 rounded bg-neutral-800 hover:bg-neutral-700 text-cyan-300 border border-neutral-700"
+                          className="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-blue-700 border border-slate-300 cursor-pointer shadow-sm"
                           title="سجل تعديلات السعر"
                         >
-                          <History className="w-3.5 h-3.5" />
+                          <History className="w-4 h-4" />
                         </button>
                         <button
                           onClick={() => {
                             setIsNewProduct(false);
                             setEditingProduct({ ...p });
                           }}
-                          className="p-1.5 rounded bg-neutral-800 hover:bg-neutral-700 text-amber-300 border border-neutral-700"
+                          className="p-2 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-800 border border-blue-200 cursor-pointer shadow-sm"
                           title="تعديل"
                         >
-                          <Edit2 className="w-3.5 h-3.5" />
+                          <Edit2 className="w-4 h-4" />
                         </button>
                         <button
                           onClick={() => handleDeleteProduct(p.id)}
-                          className="p-1.5 rounded bg-red-950/40 hover:bg-red-900/60 text-red-300 border border-red-800/40"
+                          className="p-2 rounded-xl bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 cursor-pointer shadow-sm"
                           title="تعطيل"
                         >
-                          <Trash2 className="w-3.5 h-3.5" />
+                          <Trash2 className="w-4 h-4" />
                         </button>
                       </div>
                     </td>
@@ -317,70 +342,70 @@ export const MenuManagement: React.FC = () => {
 
       {/* Product Edit / Add Modal */}
       {editingProduct && (
-        <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-sm flex items-center justify-center p-3">
-          <div className="bg-neutral-900 border border-neutral-700 rounded-3xl max-w-xl w-full p-5 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto no-scrollbar">
-            <div className="flex items-center justify-between border-b border-neutral-800 pb-2">
-              <h3 className="font-bold text-base text-amber-400">
+        <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white border-2 border-slate-200 rounded-3xl max-w-2xl w-full p-6 shadow-2xl space-y-5 max-h-[90vh] overflow-y-auto no-scrollbar text-slate-900">
+            <div className="flex items-center justify-between border-b-2 border-slate-200 pb-3">
+              <h3 className="font-black text-2xl text-black">
                 {isNewProduct ? 'إضافة طبق جديد' : `تعديل: ${editingProduct.nameAr}`}
               </h3>
               <button
                 onClick={() => setEditingProduct(null)}
-                className="p-1 rounded bg-neutral-800 text-neutral-400"
+                className="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600"
               >
-                <X className="w-5 h-5" />
+                <X className="w-6 h-6" />
               </button>
             </div>
 
-            <div className="grid grid-cols-2 gap-3 text-xs">
+            <div className="grid grid-cols-2 gap-4 text-sm font-bold">
               <div>
-                <label className="block text-neutral-400 mb-1">الاسم بالعربية *</label>
+                <label className="block text-slate-700 mb-1">الاسم بالعربية *</label>
                 <input
                   type="text"
                   value={editingProduct.nameAr || ''}
                   onChange={(e) => setEditingProduct({ ...editingProduct, nameAr: e.target.value })}
                   placeholder="مثال: شواء مشكل فاخر"
-                  className="w-full bg-neutral-950 border border-neutral-700 rounded-lg p-2 text-neutral-100"
+                  className="w-full bg-slate-50 border-2 border-slate-200 rounded-xl p-3 text-slate-900 font-black text-base focus:outline-none focus:border-blue-600"
                 />
               </div>
 
               <div>
-                <label className="block text-neutral-400 mb-1">الاسم بالفرنسية</label>
+                <label className="block text-slate-700 mb-1">الاسم بالفرنسية</label>
                 <input
                   type="text"
                   value={editingProduct.nameFr || ''}
                   onChange={(e) => setEditingProduct({ ...editingProduct, nameFr: e.target.value })}
                   placeholder="Mixte Grillade"
-                  className="w-full bg-neutral-950 border border-neutral-700 rounded-lg p-2 text-neutral-100 font-mono"
+                  className="w-full bg-slate-50 border-2 border-slate-200 rounded-xl p-3 text-slate-900 font-bold text-base focus:outline-none focus:border-blue-600"
                 />
               </div>
 
               <div>
-                <label className="block text-neutral-400 mb-1">سعر البيع (DA) *</label>
+                <label className="block text-slate-700 mb-1">سعر البيع (DA) *</label>
                 <input
                   type="number"
                   value={editingProduct.price || ''}
                   onChange={(e) => setEditingProduct({ ...editingProduct, price: e.target.value })}
                   placeholder="1400"
-                  className="w-full bg-neutral-950 border border-neutral-700 rounded-lg p-2 text-amber-300 font-mono font-bold text-sm"
+                  className="w-full bg-slate-50 border-2 border-slate-200 rounded-xl p-3 text-blue-700 font-black text-xl focus:outline-none focus:border-blue-600"
                 />
               </div>
 
               <div>
-                <label className="block text-neutral-400 mb-1">تكلفة الإنتاج (DA)</label>
+                <label className="block text-slate-700 mb-1">تكلفة الإنتاج (DA)</label>
                 <input
                   type="number"
                   value={editingProduct.costPrice || '0'}
                   onChange={(e) => setEditingProduct({ ...editingProduct, costPrice: e.target.value })}
-                  className="w-full bg-neutral-950 border border-neutral-700 rounded-lg p-2 text-neutral-100 font-mono"
+                  className="w-full bg-slate-50 border-2 border-slate-200 rounded-xl p-3 text-slate-900 font-mono text-base focus:outline-none focus:border-blue-600"
                 />
               </div>
 
               <div>
-                <label className="block text-neutral-400 mb-1">الفئة *</label>
+                <label className="block text-slate-700 mb-1">الفئة *</label>
                 <select
                   value={editingProduct.categoryId || ''}
                   onChange={(e) => setEditingProduct({ ...editingProduct, categoryId: Number(e.target.value) })}
-                  className="w-full bg-neutral-950 border border-neutral-700 rounded-lg p-2 text-neutral-100 font-bold"
+                  className="w-full bg-slate-50 border-2 border-slate-200 rounded-xl p-3 text-slate-900 font-black text-base focus:outline-none focus:border-blue-600"
                 >
                   {categories.map((c) => (
                     <option key={c.id} value={c.id}>
@@ -391,11 +416,11 @@ export const MenuManagement: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-neutral-400 mb-1">محطة التحضير (Station)</label>
+                <label className="block text-slate-700 mb-1">محطة التحضير (Station)</label>
                 <select
                   value={editingProduct.station || 'MAIN_KITCHEN'}
                   onChange={(e) => setEditingProduct({ ...editingProduct, station: e.target.value })}
-                  className="w-full bg-neutral-950 border border-neutral-700 rounded-lg p-2 text-neutral-100 font-bold"
+                  className="w-full bg-slate-50 border-2 border-slate-200 rounded-xl p-3 text-slate-900 font-black text-base focus:outline-none focus:border-blue-600"
                 >
                   <option value="MAIN_KITCHEN">المطبخ الرئيسي (Main Kitchen)</option>
                   <option value="GRILL">مشاوي وفحم (Grill)</option>
@@ -405,34 +430,34 @@ export const MenuManagement: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-neutral-400 mb-1">الباركود (Code-barres)</label>
+                <label className="block text-slate-700 mb-1">الباركود (Code-barres)</label>
                 <input
                   type="text"
                   value={editingProduct.barcode || ''}
                   onChange={(e) => setEditingProduct({ ...editingProduct, barcode: e.target.value })}
                   placeholder="GP-GRL-01"
-                  className="w-full bg-neutral-950 border border-neutral-700 rounded-lg p-2 text-neutral-100 font-mono"
+                  className="w-full bg-slate-50 border-2 border-slate-200 rounded-xl p-3 text-slate-900 font-mono text-base focus:outline-none focus:border-blue-600"
                 />
               </div>
 
               {!isNewProduct && (
                 <div>
-                  <label className="block text-neutral-400 mb-1">سبب تغيير السعر (للتوثيق)</label>
+                  <label className="block text-slate-700 mb-1">سبب تغيير السعر (للتوثيق)</label>
                   <input
                     type="text"
                     value={editingProduct.reasonForPriceChange || ''}
                     onChange={(e) => setEditingProduct({ ...editingProduct, reasonForPriceChange: e.target.value })}
                     placeholder="مثال: زيادة تكلفة المواد الخام"
-                    className="w-full bg-neutral-950 border border-neutral-700 rounded-lg p-2 text-neutral-100"
+                    className="w-full bg-slate-50 border-2 border-slate-200 rounded-xl p-3 text-slate-900 text-base focus:outline-none focus:border-blue-600"
                   />
                 </div>
               )}
             </div>
 
             {/* Recipe Ingredients Linking Section */}
-            <div className="pt-2 border-t border-neutral-800 space-y-2 text-xs">
+            <div className="pt-3 border-t-2 border-slate-200 space-y-3">
               <div className="flex items-center justify-between">
-                <span className="font-bold text-amber-300">مكونات الوصفة وخصم المخزون التلقائي:</span>
+                <span className="font-black text-base text-black">مكونات الوصفة وخصم المخزون التلقائي:</span>
                 <button
                   type="button"
                   onClick={() => {
@@ -442,15 +467,15 @@ export const MenuManagement: React.FC = () => {
                       recipes: [...currentRecipes, { ingredientId: ingredients[0]?.id || 1, quantity: '0.100' }],
                     });
                   }}
-                  className="bg-neutral-800 hover:bg-neutral-700 text-neutral-200 px-2 py-1 rounded text-[11px] font-bold"
+                  className="bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-300 px-3 py-1.5 rounded-xl text-xs font-black"
                 >
                   + إضافة مادة للوصفة
                 </button>
               </div>
 
-              <div className="space-y-1.5 max-h-36 overflow-y-auto no-scrollbar">
+              <div className="space-y-2 max-h-36 overflow-y-auto no-scrollbar">
                 {editingProduct.recipes?.map((r: any, idx: number) => (
-                  <div key={idx} className="flex items-center gap-2 bg-neutral-950 p-2 rounded-lg border border-neutral-800">
+                  <div key={idx} className="flex items-center gap-2 bg-slate-50 p-2.5 rounded-xl border border-slate-200">
                     <select
                       value={r.ingredientId}
                       onChange={(e) => {
@@ -458,7 +483,7 @@ export const MenuManagement: React.FC = () => {
                         updated[idx].ingredientId = Number(e.target.value);
                         setEditingProduct({ ...editingProduct, recipes: updated });
                       }}
-                      className="flex-1 bg-neutral-900 border border-neutral-700 rounded p-1 text-neutral-200 text-xs"
+                      className="flex-1 bg-white border border-slate-300 rounded-lg p-2 text-slate-900 font-bold text-sm"
                     >
                       {ingredients.map((ing) => (
                         <option key={ing.id} value={ing.id}>
@@ -476,7 +501,7 @@ export const MenuManagement: React.FC = () => {
                         updated[idx].quantity = e.target.value;
                         setEditingProduct({ ...editingProduct, recipes: updated });
                       }}
-                      className="w-20 bg-neutral-900 border border-neutral-700 rounded p-1 text-center font-mono text-xs text-neutral-100"
+                      className="w-24 bg-white border border-slate-300 rounded-lg p-2 text-center font-mono text-sm text-slate-900 font-black"
                     />
 
                     <button
@@ -485,19 +510,19 @@ export const MenuManagement: React.FC = () => {
                         const updated = editingProduct.recipes.filter((_: any, i: number) => i !== idx);
                         setEditingProduct({ ...editingProduct, recipes: updated });
                       }}
-                      className="p-1 text-red-400 hover:bg-red-950 rounded"
+                      className="p-2 text-red-600 hover:bg-red-50 rounded-lg"
                     >
-                      <Trash2 className="w-3.5 h-3.5" />
+                      <Trash2 className="w-4 h-4" />
                     </button>
                   </div>
                 ))}
               </div>
             </div>
 
-            {/* Product Variants (e.g. Sizes: L, XL) */}
-            <div className="pt-2 border-t border-neutral-800 space-y-2 text-xs">
+            {/* Product Variants (Sizes) */}
+            <div className="pt-3 border-t-2 border-slate-200 space-y-3">
               <div className="flex items-center justify-between">
-                <span className="font-bold text-amber-300">الأحجام والمتغيرات (مثل: حجم L و XL):</span>
+                <span className="font-black text-base text-black">الأحجام والمتغيرات (مثل: حجم L و XL):</span>
                 <button
                   type="button"
                   onClick={() => {
@@ -507,15 +532,15 @@ export const MenuManagement: React.FC = () => {
                       variants: [...cur, { nameAr: 'حجم جديد', priceAdjustment: '0' }],
                     });
                   }}
-                  className="bg-neutral-800 hover:bg-neutral-700 text-neutral-200 px-2 py-1 rounded text-[11px] font-bold"
+                  className="bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-300 px-3 py-1.5 rounded-xl text-xs font-black"
                 >
                   + إضافة حجم / متغير
                 </button>
               </div>
 
-              <div className="space-y-1.5 max-h-36 overflow-y-auto no-scrollbar">
+              <div className="space-y-2 max-h-36 overflow-y-auto no-scrollbar">
                 {editingProduct.variants?.map((v: any, idx: number) => (
-                  <div key={idx} className="flex items-center gap-2 bg-neutral-950 p-2 rounded-lg border border-neutral-800">
+                  <div key={idx} className="flex items-center gap-2 bg-slate-50 p-2.5 rounded-xl border border-slate-200">
                     <input
                       type="text"
                       placeholder="اسم الحجم (مثلاً: حجم XL)"
@@ -525,10 +550,10 @@ export const MenuManagement: React.FC = () => {
                         updated[idx].nameAr = e.target.value;
                         setEditingProduct({ ...editingProduct, variants: updated });
                       }}
-                      className="flex-1 bg-neutral-900 border border-neutral-700 rounded p-1 text-neutral-200 text-xs"
+                      className="flex-1 bg-white border border-slate-300 rounded-lg p-2 text-slate-900 text-sm font-bold"
                     />
-                    <div className="flex items-center gap-1">
-                      <span className="text-[10px] text-neutral-400">فارق السعر:</span>
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-xs text-slate-500 font-bold">فارق السعر:</span>
                       <input
                         type="number"
                         placeholder="+DA"
@@ -538,9 +563,9 @@ export const MenuManagement: React.FC = () => {
                           updated[idx].priceAdjustment = e.target.value;
                           setEditingProduct({ ...editingProduct, variants: updated });
                         }}
-                        className="w-20 bg-neutral-900 border border-neutral-700 rounded p-1 text-center font-mono text-xs text-amber-300 font-bold"
+                        className="w-24 bg-white border border-slate-300 rounded-lg p-2 text-center font-mono text-sm text-blue-700 font-black"
                       />
-                      <span className="text-[10px] text-neutral-400">DA</span>
+                      <span className="text-xs text-slate-500 font-bold">DA</span>
                     </div>
                     <button
                       type="button"
@@ -548,19 +573,19 @@ export const MenuManagement: React.FC = () => {
                         const updated = editingProduct.variants.filter((_: any, i: number) => i !== idx);
                         setEditingProduct({ ...editingProduct, variants: updated });
                       }}
-                      className="p-1 text-red-400 hover:bg-red-950 rounded"
+                      className="p-2 text-red-600 hover:bg-red-50 rounded-lg"
                     >
-                      <Trash2 className="w-3.5 h-3.5" />
+                      <Trash2 className="w-4 h-4" />
                     </button>
                   </div>
                 ))}
               </div>
             </div>
 
-            {/* Product Addons (e.g. Extras: صلصة بيضاء, فرماج) */}
-            <div className="pt-2 border-t border-neutral-800 space-y-2 text-xs">
+            {/* Product Addons */}
+            <div className="pt-3 border-t-2 border-slate-200 space-y-3">
               <div className="flex items-center justify-between">
-                <span className="font-bold text-amber-300">الإضافات والخيارات الاختيارية (مثل: صلصة بيضاء، فرماج):</span>
+                <span className="font-black text-base text-black">الإضافات الاختيارية (صلصة، فرماج...):</span>
                 <button
                   type="button"
                   onClick={() => {
@@ -570,15 +595,15 @@ export const MenuManagement: React.FC = () => {
                       addons: [...cur, { nameAr: 'إضافة جديدة', price: '100' }],
                     });
                   }}
-                  className="bg-neutral-800 hover:bg-neutral-700 text-neutral-200 px-2 py-1 rounded text-[11px] font-bold"
+                  className="bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-300 px-3 py-1.5 rounded-xl text-xs font-black"
                 >
                   + إضافة خيار إضافي
                 </button>
               </div>
 
-              <div className="space-y-1.5 max-h-36 overflow-y-auto no-scrollbar">
+              <div className="space-y-2 max-h-36 overflow-y-auto no-scrollbar">
                 {editingProduct.addons?.map((a: any, idx: number) => (
-                  <div key={idx} className="flex items-center gap-2 bg-neutral-950 p-2 rounded-lg border border-neutral-800">
+                  <div key={idx} className="flex items-center gap-2 bg-slate-50 p-2.5 rounded-xl border border-slate-200">
                     <input
                       type="text"
                       placeholder="اسم الإضافة (مثلاً: فرماج)"
@@ -588,10 +613,10 @@ export const MenuManagement: React.FC = () => {
                         updated[idx].nameAr = e.target.value;
                         setEditingProduct({ ...editingProduct, addons: updated });
                       }}
-                      className="flex-1 bg-neutral-900 border border-neutral-700 rounded p-1 text-neutral-200 text-xs"
+                      className="flex-1 bg-white border border-slate-300 rounded-lg p-2 text-slate-900 text-sm font-bold"
                     />
-                    <div className="flex items-center gap-1">
-                      <span className="text-[10px] text-neutral-400">السعر:</span>
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-xs text-slate-500 font-bold">السعر:</span>
                       <input
                         type="number"
                         placeholder="DA"
@@ -601,9 +626,9 @@ export const MenuManagement: React.FC = () => {
                           updated[idx].price = e.target.value;
                           setEditingProduct({ ...editingProduct, addons: updated });
                         }}
-                        className="w-20 bg-neutral-900 border border-neutral-700 rounded p-1 text-center font-mono text-xs text-amber-300 font-bold"
+                        className="w-24 bg-white border border-slate-300 rounded-lg p-2 text-center font-mono text-sm text-blue-700 font-black"
                       />
-                      <span className="text-[10px] text-neutral-400">DA</span>
+                      <span className="text-xs text-slate-500 font-bold">DA</span>
                     </div>
                     <button
                       type="button"
@@ -611,9 +636,9 @@ export const MenuManagement: React.FC = () => {
                         const updated = editingProduct.addons.filter((_: any, i: number) => i !== idx);
                         setEditingProduct({ ...editingProduct, addons: updated });
                       }}
-                      className="p-1 text-red-400 hover:bg-red-950 rounded"
+                      className="p-2 text-red-600 hover:bg-red-50 rounded-lg"
                     >
-                      <Trash2 className="w-3.5 h-3.5" />
+                      <Trash2 className="w-4 h-4" />
                     </button>
                   </div>
                 ))}
@@ -622,7 +647,7 @@ export const MenuManagement: React.FC = () => {
 
             <button
               onClick={handleSaveProduct}
-              className="w-full py-2.5 bg-amber-500 hover:bg-amber-400 text-black font-bold text-xs rounded-xl shadow-lg active:scale-95 transition"
+              className="w-full py-4 bg-blue-600 hover:bg-blue-700 text-white font-black text-xl rounded-2xl shadow-xl active:scale-95 transition cursor-pointer"
             >
               حفظ الطبق
             </button>
@@ -632,44 +657,44 @@ export const MenuManagement: React.FC = () => {
 
       {/* Category Modal */}
       {showCatModal && (
-        <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-sm flex items-center justify-center p-3">
-          <div className="bg-neutral-900 border border-neutral-700 rounded-3xl max-w-sm w-full p-4 shadow-2xl space-y-3">
-            <div className="flex items-center justify-between border-b border-neutral-800 pb-2">
-              <h3 className="font-bold text-sm text-amber-400">إضافة فئة جديدة</h3>
-              <button onClick={() => setShowCatModal(false)} className="p-1 rounded bg-neutral-800 text-neutral-400">
-                <X className="w-4 h-4" />
+        <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white border-2 border-slate-200 rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-4 text-slate-900">
+            <div className="flex items-center justify-between border-b-2 border-slate-200 pb-3">
+              <h3 className="font-black text-2xl text-black">إضافة فئة جديدة</h3>
+              <button onClick={() => setShowCatModal(false)} className="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600">
+                <X className="w-6 h-6" />
               </button>
             </div>
 
-            <div className="space-y-2 text-xs">
+            <div className="space-y-3 font-bold text-sm">
               <div>
-                <label className="block text-neutral-400 mb-1">اسم الفئة بالعربية *</label>
+                <label className="block text-slate-700 mb-1">اسم الفئة بالعربية *</label>
                 <input
                   type="text"
                   value={catNameAr}
                   onChange={(e) => setCatNameAr(e.target.value)}
                   placeholder="مثال: مأكولات بحرية"
-                  className="w-full bg-neutral-950 border border-neutral-700 rounded-lg p-2 text-neutral-100"
+                  className="w-full bg-slate-50 border-2 border-slate-200 rounded-xl p-3 text-slate-900 font-black text-base focus:outline-none focus:border-blue-600"
                 />
               </div>
 
               <div>
-                <label className="block text-neutral-400 mb-1">الاسم بالفرنسية</label>
+                <label className="block text-slate-700 mb-1">الاسم بالفرنسية</label>
                 <input
                   type="text"
                   value={catNameFr}
                   onChange={(e) => setCatNameFr(e.target.value)}
                   placeholder="Poissons & Fruits de mer"
-                  className="w-full bg-neutral-950 border border-neutral-700 rounded-lg p-2 text-neutral-100 font-mono"
+                  className="w-full bg-slate-50 border-2 border-slate-200 rounded-xl p-3 text-slate-900 text-base focus:outline-none focus:border-blue-600"
                 />
               </div>
 
               <div>
-                <label className="block text-neutral-400 mb-1">المحطة الموجهة لها</label>
+                <label className="block text-slate-700 mb-1">المحطة الموجهة لها</label>
                 <select
                   value={catStation}
                   onChange={(e) => setCatStation(e.target.value)}
-                  className="w-full bg-neutral-950 border border-neutral-700 rounded-lg p-2 text-neutral-100 font-bold"
+                  className="w-full bg-slate-50 border-2 border-slate-200 rounded-xl p-3 text-slate-900 font-black text-base focus:outline-none focus:border-blue-600"
                 >
                   <option value="MAIN_KITCHEN">المطبخ الرئيسي</option>
                   <option value="GRILL">مشاوي وفحم</option>
@@ -681,7 +706,7 @@ export const MenuManagement: React.FC = () => {
 
             <button
               onClick={handleSaveCategory}
-              className="w-full py-2 bg-amber-500 hover:bg-amber-400 text-black font-bold text-xs rounded-xl active:scale-95 transition"
+              className="w-full py-4 bg-blue-600 hover:bg-blue-700 text-white font-black text-xl rounded-2xl active:scale-95 transition shadow-xl cursor-pointer"
             >
               حفظ الفئة
             </button>
@@ -691,36 +716,36 @@ export const MenuManagement: React.FC = () => {
 
       {/* Price History Audit Modal */}
       {priceHistoryProd && (
-        <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-sm flex items-center justify-center p-3">
-          <div className="bg-neutral-900 border border-neutral-700 rounded-3xl max-w-md w-full p-4 shadow-2xl space-y-3">
-            <div className="flex items-center justify-between border-b border-neutral-800 pb-2">
+        <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white border-2 border-slate-200 rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-4 text-slate-900">
+            <div className="flex items-center justify-between border-b-2 border-slate-200 pb-3">
               <div>
-                <h3 className="font-bold text-sm text-cyan-400">سجل تعديلات سعر:</h3>
-                <p className="text-xs text-neutral-200 font-bold">{priceHistoryProd.nameAr}</p>
+                <h3 className="font-black text-xl text-black">سجل تعديلات سعر:</h3>
+                <p className="text-base text-blue-700 font-black">{priceHistoryProd.nameAr}</p>
               </div>
-              <button onClick={() => setPriceHistoryProd(null)} className="p-1 rounded bg-neutral-800 text-neutral-400">
-                <X className="w-4 h-4" />
+              <button onClick={() => setPriceHistoryProd(null)} className="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600">
+                <X className="w-5 h-5" />
               </button>
             </div>
 
-            <div className="space-y-2 max-h-64 overflow-y-auto no-scrollbar">
+            <div className="space-y-2.5 max-h-64 overflow-y-auto no-scrollbar">
               {priceHistoryList.length === 0 ? (
-                <p className="text-center text-xs text-neutral-500 py-6">لم يتم تغيير سعر هذا الطبق من قبل</p>
+                <p className="text-center text-sm font-bold text-slate-400 py-8">لم يتم تغيير سعر هذا الطبق من قبل</p>
               ) : (
                 priceHistoryList.map((h, i) => (
-                  <div key={i} className="bg-neutral-950 p-2.5 rounded-xl border border-neutral-800 text-xs">
+                  <div key={i} className="bg-slate-50 p-3.5 rounded-2xl border-2 border-slate-200 text-sm">
                     <div className="flex items-center justify-between">
-                      <div className="font-mono">
-                        <span className="line-through text-red-400">{Number(h.oldPrice)} DA</span>
-                        <span className="mx-2 text-neutral-500">→</span>
-                        <span className="font-bold text-emerald-400">{Number(h.newPrice)} DA</span>
+                      <div className="font-black">
+                        <span className="line-through text-red-600">{Number(h.oldPrice)} DA</span>
+                        <span className="mx-2 text-slate-400">→</span>
+                        <span className="text-blue-700 font-black">{Number(h.newPrice)} DA</span>
                       </div>
-                      <span className="text-[10px] text-neutral-500">
+                      <span className="text-xs text-slate-500 font-bold">
                         {new Date(h.changedAt).toLocaleDateString('fr-FR')}
                       </span>
                     </div>
-                    {h.reason && <p className="text-[11px] text-neutral-400 mt-1">السبب: {h.reason}</p>}
-                    <p className="text-[10px] text-neutral-500 mt-0.5">المستخدم: {h.changedBy || 'Admin'}</p>
+                    {h.reason && <p className="text-xs text-slate-700 mt-1 font-bold">السبب: {h.reason}</p>}
+                    <p className="text-xs text-slate-400 mt-0.5">المستخدم: {h.changedBy || 'Admin'}</p>
                   </div>
                 ))
               )}

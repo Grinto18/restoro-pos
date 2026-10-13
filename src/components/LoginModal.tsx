@@ -60,62 +60,56 @@ export const LoginModal: React.FC = () => {
   };
 
   return (
-    <div className="fixed inset-0 z-[999] bg-neutral-950 flex items-center justify-center p-4 select-none">
-      {/* Background ambient lighting */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -left-40 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl"></div>
-        <div className="absolute -bottom-40 -right-40 w-96 h-96 bg-amber-600/10 rounded-full blur-3xl"></div>
-      </div>
-
-      <div className="relative bg-neutral-900 border border-neutral-800 rounded-3xl max-w-sm w-full p-6 shadow-2xl space-y-5 text-center">
+    <div className="fixed inset-0 z-[999] bg-slate-900/80 backdrop-blur-sm flex items-center justify-center p-4 select-none">
+      <div className="relative bg-white border-2 border-slate-200 rounded-3xl max-w-md w-full p-8 shadow-2xl space-y-6 text-center text-slate-900">
         {/* Brand Header */}
         <div className="space-y-1">
-          <div className="w-14 h-14 mx-auto rounded-2xl bg-gradient-to-br from-amber-400 via-amber-500 to-amber-700 flex items-center justify-center shadow-lg shadow-amber-500/20 text-black font-black text-xl mb-3">
+          <div className="w-16 h-16 mx-auto rounded-2xl bg-blue-600 flex items-center justify-center shadow-lg text-white font-black text-2xl mb-3 tracking-wider">
             GP
           </div>
-          <h1 className="text-xl font-black text-amber-400 tracking-wide">GOLDEN PALACE POS</h1>
-          <h2 className="text-sm font-bold text-neutral-200">مطعم القصر الذهبي • عند الجيجلي</h2>
-          <p className="text-[11px] text-neutral-400">شارع بلهوشات، حسين داي، الجزائر</p>
+          <h1 className="text-3xl font-black text-black tracking-wide">GOLDEN PALACE POS</h1>
+          <h2 className="text-xl font-bold text-slate-800">مطعم القصر الذهبي • عند الجيجلي</h2>
+          <p className="text-sm font-semibold text-slate-500">شارع بلهوشات، حسين داي، الجزائر العاصمة</p>
         </div>
 
         {isLocked && user && (
-          <div className="p-2.5 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs font-bold flex items-center justify-center gap-2">
-            <Lock className="w-4 h-4" />
+          <div className="p-3.5 rounded-2xl bg-blue-50 border-2 border-blue-200 text-blue-900 text-sm font-extrabold flex items-center justify-center gap-2">
+            <Lock className="w-5 h-5 text-blue-600" />
             <span>الشاشة مقفلة للمستخدم: {user.fullName}</span>
           </div>
         )}
 
         {error && (
-          <div className="p-2 rounded-xl bg-red-950/80 border border-red-700 text-red-300 text-xs font-bold animate-shake">
+          <div className="p-3 rounded-2xl bg-red-50 border-2 border-red-200 text-red-700 text-sm font-black animate-shake">
             {error}
           </div>
         )}
 
         {/* PIN MODE */}
         {mode === 'PIN' ? (
-          <div className="space-y-4">
+          <div className="space-y-5">
             {/* PIN Dots Display */}
-            <div className="flex items-center justify-center gap-3 py-2">
+            <div className="flex items-center justify-center gap-4 py-2">
               {[0, 1, 2, 3].map((i) => (
                 <div
                   key={i}
-                  className={`w-4 h-4 rounded-full border-2 transition-all ${
+                  className={`w-5 h-5 rounded-full border-2 transition-all ${
                     pin.length > i
-                      ? 'bg-amber-400 border-amber-400 scale-110 shadow'
-                      : 'border-neutral-700 bg-neutral-950'
+                      ? 'bg-blue-600 border-blue-600 scale-125 shadow-md'
+                      : 'border-slate-300 bg-slate-100'
                   }`}
                 />
               ))}
             </div>
 
             {/* Quick Demo PIN Helper info */}
-            <div className="text-[10px] text-neutral-400">
-              PIN الافتراضي: <span className="font-mono text-amber-300">1234</span> (Admin) أو{' '}
-              <span className="font-mono text-amber-300">1111</span> (كاشير)
+            <div className="text-xs font-bold text-slate-500 bg-slate-50 py-1.5 px-3 rounded-xl border border-slate-200 inline-block">
+              PIN الافتراضي: <span className="font-black text-blue-700">1234</span> (Admin) أو{' '}
+              <span className="font-black text-blue-700">1111</span> (كاشير)
             </div>
 
-            {/* Touch Numpad */}
-            <div className="grid grid-cols-3 gap-2 max-w-[260px] mx-auto font-mono text-lg">
+            {/* Touch Numpad (Big and clear, 22-26px font) */}
+            <div className="grid grid-cols-3 gap-3 max-w-[290px] mx-auto font-mono">
               {['1', '2', '3', '4', '5', '6', '7', '8', '9', 'C', '0', '⌫'].map((k) => (
                 <button
                   key={k}
@@ -125,7 +119,7 @@ export const LoginModal: React.FC = () => {
                     else handleNumpad(k);
                   }}
                   disabled={isLoading}
-                  className="h-12 rounded-xl bg-neutral-800 hover:bg-neutral-700 active:bg-amber-500 active:text-black text-neutral-100 font-bold transition flex items-center justify-center border border-neutral-700/60 active:scale-95"
+                  className="h-14 rounded-2xl bg-slate-100 hover:bg-blue-50 hover:border-blue-500 active:bg-blue-600 active:text-white text-slate-900 font-black text-2xl transition flex items-center justify-center border-2 border-slate-200 active:scale-95 cursor-pointer shadow-sm"
                 >
                   {k}
                 </button>
@@ -136,7 +130,7 @@ export const LoginModal: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setMode('PASSWORD')}
-                className="text-xs text-amber-400 hover:underline pt-2 inline-block font-semibold"
+                className="text-sm text-blue-700 hover:underline pt-2 inline-block font-extrabold cursor-pointer"
               >
                 تسجيل الدخول باسم المستخدم وكلمة المرور
               </button>
@@ -144,31 +138,31 @@ export const LoginModal: React.FC = () => {
           </div>
         ) : (
           /* USERNAME / PASSWORD MODE */
-          <form onSubmit={handlePasswordSubmit} className="space-y-3 text-right text-xs">
+          <form onSubmit={handlePasswordSubmit} className="space-y-4 text-right">
             <div>
-              <label className="block text-neutral-400 mb-1">اسم المستخدم أو البريد:</label>
+              <label className="block text-sm font-bold text-slate-700 mb-1">اسم المستخدم أو البريد:</label>
               <input
                 type="text"
                 value={identifier}
                 onChange={(e) => setIdentifier(e.target.value)}
-                className="w-full bg-neutral-950 border border-neutral-700 rounded-xl p-2.5 text-neutral-100 font-mono text-sm focus:outline-none focus:border-amber-500"
+                className="w-full bg-slate-50 border-2 border-slate-200 rounded-xl px-4 py-3 text-lg font-bold text-slate-900 focus:outline-none focus:border-blue-600 focus:bg-white"
               />
             </div>
 
             <div>
-              <label className="block text-neutral-400 mb-1">كلمة المرور:</label>
+              <label className="block text-sm font-bold text-slate-700 mb-1">كلمة المرور:</label>
               <input
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full bg-neutral-950 border border-neutral-700 rounded-xl p-2.5 text-neutral-100 font-mono text-sm focus:outline-none focus:border-amber-500"
+                className="w-full bg-slate-50 border-2 border-slate-200 rounded-xl px-4 py-3 text-lg font-bold text-slate-900 focus:outline-none focus:border-blue-600 focus:bg-white"
               />
             </div>
 
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full py-3 bg-amber-500 hover:bg-amber-400 disabled:opacity-50 text-black font-black text-sm rounded-xl shadow-lg shadow-amber-500/20 active:scale-95 transition"
+              className="w-full py-4 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white font-black text-xl rounded-2xl shadow-xl active:scale-95 transition cursor-pointer"
             >
               {isLoading ? 'جاري التحقق...' : 'تسجيل الدخول'}
             </button>
@@ -176,7 +170,7 @@ export const LoginModal: React.FC = () => {
             <button
               type="button"
               onClick={() => setMode('PIN')}
-              className="w-full text-center text-xs text-neutral-400 hover:text-amber-400 font-semibold pt-1"
+              className="w-full text-center text-sm text-blue-700 hover:underline font-extrabold pt-2 cursor-pointer"
             >
               ← العودة لتسجيل الدخول السريع برمز PIN
             </button>

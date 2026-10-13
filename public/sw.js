@@ -31,6 +31,11 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
+  // Only handle HTTP and HTTPS requests; ignore chrome-extension://, moz-extension://, file://, etc.
+  if (!event.request.url.startsWith('http://') && !event.request.url.startsWith('https://')) {
+    return;
+  }
+
   const url = new URL(event.request.url);
 
   // For API calls, attempt network first, don't cache unless necessary
@@ -61,16 +66,23 @@ self.addEventListener('fetch', (event) => {
           networkResponse && 
           networkResponse.status === 200 && 
           event.request.method === 'GET' && 
-          (url.pathname.endsWith('.js') || url.pathname.endsWith('.css') || url.pathname.endsWith('.svg') || url.pathname.endsWith('.woff2'))
+          (url.pathname.endsWith('.js') || url.pathname.endsWith('.css') || url.pathname.endsWith('.svg') || url.pathname.endsWith('.woff2') || url.pathname.endsWith('.ico'))
         ) {
           const clone = networkResponse.clone();
-          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
+          caches.open(CACHE_NAME).then((cache) => {
+            cache.put(event.request, clone).catch((err) => {
+              console.warn('Cache put skipped for request:', event.request.url, err);
+            });
+          });
         }
         return networkResponse;
-      }).catch(() => {
+      }).catch(async () => {
         if (event.request.mode === 'navigate') {
-          return caches.match('/index.html');
+          const fallback = await caches.match('/index.html');
+          if (fallback) return fallback;
         }
+        // Return safe empty response instead of undefined/error
+        return new Response('', { status: 404, statusText: 'Not Found' });
       });
     })
   );

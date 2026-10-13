@@ -71,8 +71,16 @@ export interface RestaurantTable {
   tableNumber: string;
   zone: string;
   capacity: number;
-  status: 'AVAILABLE' | 'OCCUPIED' | 'RESERVED' | 'CLEANING';
+  status: 'AVAILABLE' | 'OCCUPIED' | 'WAITING_PAYMENT' | 'RESERVED' | 'CLEANING' | 'INACTIVE';
   currentOrderId?: number | null;
+  activeOrder?: {
+    id: number;
+    orderNumber: string;
+    total: number;
+    status: string;
+    paymentStatus: string;
+    createdAt?: string;
+  } | null;
 }
 
 export interface CartItem {

@@ -46,10 +46,8 @@ export const Navigation: React.FC<NavigationProps> = ({ activeTab, onTabChange }
     {
       id: 'pos' as ActiveTab,
       label: 'نقطة البيع (F2)',
-      labelFr: 'Saisie Ventes',
+      labelFr: 'Caisse POS',
       icon: ShoppingCart,
-      color: 'bg-amber-500 hover:bg-amber-400 text-black',
-      activeColor: 'ring-2 ring-amber-400 bg-amber-400 text-black shadow-lg shadow-amber-500/20',
       allowedRoles: ['ADMIN', 'MANAGER', 'CASHIER', 'WAITER'],
     },
     {
@@ -57,17 +55,13 @@ export const Navigation: React.FC<NavigationProps> = ({ activeTab, onTabChange }
       label: 'خريطة الصالة',
       labelFr: 'Plan de Salle',
       icon: Grid,
-      color: 'bg-sky-700/80 hover:bg-sky-600 text-white',
-      activeColor: 'ring-2 ring-sky-400 bg-sky-600 text-white',
       allowedRoles: ['ADMIN', 'MANAGER', 'CASHIER', 'WAITER'],
     },
     {
       id: 'kitchen' as ActiveTab,
       label: 'شاشة المطبخ (KDS)',
-      labelFr: 'Bon Cuisine',
+      labelFr: 'Écran Cuisine',
       icon: ChefHat,
-      color: 'bg-orange-700/80 hover:bg-orange-600 text-white',
-      activeColor: 'ring-2 ring-orange-400 bg-orange-600 text-white',
       allowedRoles: ['ADMIN', 'MANAGER', 'KITCHEN'],
     },
     {
@@ -75,17 +69,13 @@ export const Navigation: React.FC<NavigationProps> = ({ activeTab, onTabChange }
       label: 'إدارة الصندوق (F12)',
       labelFr: 'Gestion Caisse',
       icon: Coins,
-      color: 'bg-emerald-700/80 hover:bg-emerald-600 text-white',
-      activeColor: 'ring-2 ring-emerald-400 bg-emerald-600 text-white',
       allowedRoles: ['ADMIN', 'MANAGER', 'CASHIER'],
     },
     {
       id: 'menu' as ActiveTab,
       label: 'الأطباق والأسعار (F3)',
-      labelFr: 'Produits',
+      labelFr: 'Menu & Plats',
       icon: UtensilsCrossed,
-      color: 'bg-neutral-800 hover:bg-neutral-700 text-amber-300',
-      activeColor: 'ring-2 ring-amber-400 bg-neutral-700 text-amber-300',
       allowedRoles: ['ADMIN', 'MANAGER'],
     },
     {
@@ -93,71 +83,55 @@ export const Navigation: React.FC<NavigationProps> = ({ activeTab, onTabChange }
       label: 'المخزون والجرد',
       labelFr: 'Stock & Ingrédients',
       icon: Package,
-      color: 'bg-neutral-800 hover:bg-neutral-700 text-neutral-200',
-      activeColor: 'ring-2 ring-neutral-400 bg-neutral-700 text-white',
       allowedRoles: ['ADMIN', 'MANAGER', 'INVENTORY'],
     },
     {
       id: 'waste' as ActiveTab,
       label: 'الهدر والتالف',
-      labelFr: 'Pertes',
+      labelFr: 'Pertes & Déchets',
       icon: AlertTriangle,
-      color: 'bg-neutral-800 hover:bg-neutral-700 text-rose-300',
-      activeColor: 'ring-2 ring-rose-400 bg-neutral-700 text-rose-300',
       allowedRoles: ['ADMIN', 'MANAGER', 'INVENTORY', 'KITCHEN'],
     },
     {
       id: 'purchases' as ActiveTab,
       label: 'المشتريات (F1)',
-      labelFr: 'Saisie Achats',
+      labelFr: 'Achats Fournisseurs',
       icon: FileSpreadsheet,
-      color: 'bg-neutral-800 hover:bg-neutral-700 text-cyan-300',
-      activeColor: 'ring-2 ring-cyan-400 bg-neutral-700 text-cyan-300',
       allowedRoles: ['ADMIN', 'MANAGER', 'INVENTORY'],
     },
     {
       id: 'delivery' as ActiveTab,
       label: 'التوصيل المنزلي',
-      labelFr: 'Livraison',
+      labelFr: 'Livraison Clients',
       icon: Truck,
-      color: 'bg-neutral-800 hover:bg-neutral-700 text-purple-300',
-      activeColor: 'ring-2 ring-purple-400 bg-neutral-700 text-purple-300',
       allowedRoles: ['ADMIN', 'MANAGER', 'CASHIER'],
     },
     {
       id: 'customers' as ActiveTab,
       label: 'الزبائن (F5)',
-      labelFr: 'Clients',
+      labelFr: 'Fichier Clients',
       icon: Users,
-      color: 'bg-neutral-800 hover:bg-neutral-700 text-teal-300',
-      activeColor: 'ring-2 ring-teal-400 bg-neutral-700 text-teal-300',
       allowedRoles: ['ADMIN', 'MANAGER', 'CASHIER'],
     },
     {
       id: 'expenses' as ActiveTab,
       label: 'المصاريف',
-      labelFr: 'Charges',
+      labelFr: 'Dépenses & Charges',
       icon: Receipt,
-      color: 'bg-neutral-800 hover:bg-neutral-700 text-yellow-300',
-      activeColor: 'ring-2 ring-yellow-400 bg-neutral-700 text-yellow-300',
       allowedRoles: ['ADMIN', 'MANAGER'],
     },
     {
       id: 'reports' as ActiveTab,
       label: 'الإحصائيات (F10)',
-      labelFr: 'Statistiques',
+      labelFr: 'Rapports & Ventes',
       icon: BarChart3,
-      color: 'bg-neutral-800 hover:bg-neutral-700 text-green-300',
-      activeColor: 'ring-2 ring-green-400 bg-neutral-700 text-green-300',
       allowedRoles: ['ADMIN', 'MANAGER'],
     },
     {
       id: 'audit' as ActiveTab,
       label: 'سجل العمليات',
-      labelFr: 'Audit Logs',
+      labelFr: 'Journal d\'Audit',
       icon: ShieldCheck,
-      color: 'bg-neutral-800 hover:bg-neutral-700 text-neutral-300',
-      activeColor: 'ring-2 ring-neutral-400 bg-neutral-700 text-white',
       allowedRoles: ['ADMIN'],
     },
     {
@@ -165,15 +139,13 @@ export const Navigation: React.FC<NavigationProps> = ({ activeTab, onTabChange }
       label: 'الإعدادات والنسخ',
       labelFr: 'Configuration',
       icon: Settings,
-      color: 'bg-neutral-800 hover:bg-neutral-700 text-neutral-300',
-      activeColor: 'ring-2 ring-amber-400 bg-neutral-700 text-white',
       allowedRoles: ['ADMIN'],
     },
   ];
 
   return (
-    <nav className="bg-neutral-950 border-b border-neutral-800 px-3 py-1.5 overflow-x-auto no-scrollbar select-none">
-      <div className="flex items-center gap-1.5 min-w-max">
+    <nav className="bg-black border-b border-slate-800 px-3 py-2 overflow-x-auto no-scrollbar select-none">
+      <div className="flex items-center gap-2 min-w-max">
         {navItems.map((item) => {
           if (!hasRole(item.allowedRoles as any)) return null;
           const isActive = activeTab === item.id;
@@ -183,14 +155,16 @@ export const Navigation: React.FC<NavigationProps> = ({ activeTab, onTabChange }
             <button
               key={item.id}
               onClick={() => onTabChange(item.id)}
-              className={`flex items-center gap-2 px-3 py-1.5 rounded-lg font-bold text-xs transition duration-150 active:scale-95 ${
-                isActive ? item.activeColor : `${item.color} border border-neutral-700/50`
+              className={`flex items-center gap-2.5 px-4 py-2.5 rounded-xl font-bold text-sm transition-all duration-150 active:scale-95 cursor-pointer ${
+                isActive
+                  ? 'bg-blue-600 text-white shadow-lg ring-2 ring-blue-400 font-extrabold'
+                  : 'bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-700/70 hover:border-slate-600'
               }`}
             >
-              <IconComponent className="w-4 h-4 shrink-0" />
+              <IconComponent className={`w-5 h-5 shrink-0 ${isActive ? 'text-white' : 'text-blue-400'}`} />
               <div className="text-right flex flex-col leading-tight">
-                <span>{item.label}</span>
-                <span className="text-[9px] opacity-75 font-normal tracking-wide">
+                <span className="text-sm font-extrabold">{item.label}</span>
+                <span className={`text-[11px] font-medium tracking-wide ${isActive ? 'text-blue-100' : 'text-slate-400'}`}>
                   {item.labelFr}
                 </span>
               </div>
